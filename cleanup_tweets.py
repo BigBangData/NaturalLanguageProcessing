@@ -26,7 +26,7 @@ def clean_training_data(params):
 
     def load_dataset(filepath, col_ix, col_names, ix_list):
         dataset = pd.read_csv(filepath, encoding='latin-1', usecols=col_ix, 
-                              skiprows=[ix for ix in range(1600000) if ix not in ix_list])
+                              skiprows=[ix for ix in range(1600001) if ix not in ix_list])
         dataset.columns = col_names
         return dataset
 
@@ -99,38 +99,38 @@ def run_processes():
     with concurrent.futures.ProcessPoolExecutor() as executor:
 
         params_list = [
-                       (range(     0,    50000),  1),
-                       (range(  50000,  100000),  2),
-                       (range( 100000,  150000),  3),
-                       (range( 150000,  200000),  4),
-                       (range( 200000,  250000),  5),
-                       (range( 250000,  300000),  6),
-                       (range( 300000,  350000),  7),
-                       (range( 350000,  400000),  8),
-                       (range( 400000,  450000),  9),
-                       (range( 450000,  500000), 10),
-                       (range( 500000,  550000), 11),
-                       (range( 550000,  600000), 12),
-                       (range( 600000,  650000), 13),
-                       (range( 650000,  700000), 14),
-                       (range( 700000,  750000), 15),
-                       (range( 750000,  800000), 16),
-                       (range( 800000,  850000), 17),
-                       (range( 850000,  900000), 18),
-                       (range( 900000,  950000), 19),
-                       (range( 950000, 1000000), 20),
-                       (range(1000000, 1050000), 21),
-                       (range(1050000, 1100000), 22),
-                       (range(1100000, 1150000), 23),
-                       (range(1150000, 1200000), 24),
-                       (range(1200000, 1250000), 25),
-                       (range(1250000, 1300000), 26),
-                       (range(1300000, 1350000), 27),
-                       (range(1350000, 1400000), 28),
-                       (range(1400000, 1450000), 29),
-                       (range(1450000, 1500000), 30),
-                       (range(1500000, 1550000), 31),
-                       (range(1550000, 1600000), 32)
+                       (range(     0,    50001),  1),
+                       (range(  50000,  100001),  2),
+                       (range( 100000,  150001),  3),
+                       (range( 150000,  200001),  4),
+                       (range( 200000,  250001),  5),
+                       (range( 250000,  300001),  6),
+                       (range( 300000,  350001),  7),
+                       (range( 350000,  400001),  8),
+                       (range( 400000,  450001),  9),
+                       (range( 450000,  500001), 10),
+                       (range( 500000,  550001), 11),
+                       (range( 550000,  600001), 12),
+                       (range( 600000,  650001), 13),
+                       (range( 650000,  700001), 14),
+                       (range( 700000,  750001), 15),
+                       (range( 750000,  800001), 16),
+                       (range( 800000,  850001), 17),
+                       (range( 850000,  900001), 18),
+                       (range( 900000,  950001), 19),
+                       (range( 950000, 1000001), 20),
+                       (range(1000000, 1050001), 21),
+                       (range(1050000, 1100001), 22),
+                       (range(1100000, 1150001), 23),
+                       (range(1150000, 1200001), 24),
+                       (range(1200000, 1250001), 25),
+                       (range(1250000, 1300001), 26),
+                       (range(1300000, 1350001), 27),
+                       (range(1350000, 1400001), 28),
+                       (range(1400000, 1450001), 29),
+                       (range(1450000, 1500001), 30),
+                       (range(1500000, 1550001), 31),
+                       (range(1550000, 1600001), 32)
                       ]
         
         results = [executor.submit(clean_training_data, p) for p in params_list]
