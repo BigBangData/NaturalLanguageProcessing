@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+# Ingest module for the 1.6 M sentiment140 dataset 
+
 import time
 import pandas as pd
 import concurrent.futures as cf

@@ -1,3 +1,6 @@
+## Twitter's example for using the filtered stream
+
+
 import requests
 import os
 import json
