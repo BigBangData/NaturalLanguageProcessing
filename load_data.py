@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Ingest module for the 1.6 M sentiment140 dataset 
+# data-loading module for the 1.6 M sentiment140 dataset 
 
 import time
 import pandas as pd
