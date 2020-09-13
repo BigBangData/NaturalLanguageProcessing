@@ -1,0 +1,22 @@
+Date: 2020-09-12
+Time: 23:24:56
+
+
+Tweet cleanup
+---------------------------------------------
+Loading...
+
+Cleaning...
+
+Deduping...
+
+Saving...
+
+Cleanup successful.
+Total (raw) number of rows: 87600
+Final (deduplicated) number of rows: 65375
+% of duplicated tweets: 25.37
+Overall % of retweets: 36.07
+% of retweets in duplicates: 85.17
+Time elapsed: 28.66 secs.
+---------------------------------------------
