@@ -168,7 +168,7 @@ if __name__=="__main__":
     
     # unpack 3-tuples
     df.loc[:, 'tokenized'], df.loc[:, 'filtered'], df.loc[:, 'stemmed'] = \
-    [x[0] for x in tuples], [x[1] for x in tuples], [x[2] for x in tuples], 
+    [x[0] for x in tuples], [x[1] for x in tuples], [x[2] for x in tuples]
 
     # create a subset with cols of interest
     df = df[['ID','Retweet','Polarity',
