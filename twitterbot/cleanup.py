@@ -2,8 +2,8 @@
 
 # Cleanup module for Twitter search API
 
-import re
 import os
+import re
 import sys
 import json
 import time
@@ -20,7 +20,7 @@ from nltk.stem import PorterStemmer
 
 # load data
 def load_data():
-    filepath = os.path.join("data","raw","tweets") 
+    filepath = os.path.join("..","data","1_raw","tweets") 
 
     dfm = []
     for f in os.listdir(filepath):
@@ -127,22 +127,22 @@ if __name__=="__main__":
 
     # start counter 
     start = time.time()
-	
+
     # get date and time 
     dt_object = datetime.datetime.fromtimestamp(start)
     dt_object = str(dt_object).split('.')[0]
     Date, Time = dt_object.split(' ')
 
     # setup log dir
-    log_dir =os.path.join("logs")
+    log_dir = os.path.join("logs")
     try:
         os.stat(log_dir)
     except:
         os.mkdir(log_dir)
-	
+
     log_name = Date.replace('-', '') + '_cleanup_log'
     log_path = os.path.join(log_dir, log_name)
-	
+
     # redirect stdout to log    
     stdoutOrigin = sys.stdout 
     sys.stdout = open(log_path, "w")
@@ -151,13 +151,14 @@ if __name__=="__main__":
     print('\n')
     print('Tweet cleanup')
     print('-' * 45)
-		
+
     # load
     print('Loading...\n')
     df = load_data()
     raw_nrows = df.shape[0]
 
     # create retweet col
+    # Note: RT is uppercase, this has to be before cleanup
     df['Retweet'] = map_is_retweet(df['Text'].values)
 
     # cleanup Tweet text, return list of 3-tuples
@@ -185,7 +186,7 @@ if __name__=="__main__":
 
     # save
     print('Saving...\n')
-    filepath = os.path.join("data","clean","tweets")
+    filepath = os.path.join("..","data","2_clean","tweets")
 
     if not os.path.exists(filepath):
         os.makedirs(filepath)
@@ -206,7 +207,7 @@ if __name__=="__main__":
     print('% of retweets in duplicates: ' + str(pct_retweets_dupes))
     print('Time elapsed: ' + str(elapsed) + ' secs.')
     print('-' * 45)
-		
+    
     # finish log 
     sys.stdout.close()
     sys.stdout=stdoutOrigin

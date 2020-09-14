@@ -2,16 +2,18 @@
 
 # data-loading module for the 1.6 M sentiment140 dataset 
 
+import os
 import time
 import pandas as pd
 import concurrent.futures as cf
 
 def load_training_subset(params):
     ix_list, num = params
-    filepath = ''.join(["./data/clean/train_", 
-                        str(num), ".csv"])
+    filepath = os.path.join("..","data","2_clean","sentiment140")
+    filename = "".join(["train_", str(num), ".csv"])
+    full_path = os.path.join(filepath, filename)
     
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(full_path)
     df.index = ix_list
     return df
  

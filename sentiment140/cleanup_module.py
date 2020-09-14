@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import re
 import time
 import string
@@ -10,6 +11,8 @@ from html import unescape
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
+
+# TODO: redo cleanup function to return non-stemmed text for RSR calc.
 
 def clean_training_data(params):
     """Cleans Tweets for many known issues - not a general function but specifically
@@ -25,8 +28,10 @@ def clean_training_data(params):
     url_extractor = urlextract.URLExtract()
 
     def load_dataset(filepath, col_ix, col_names, ix_list):
+        
         dataset = pd.read_csv(filepath, encoding='latin-1', usecols=col_ix, 
                               skiprows=[ix for ix in range(1600001) if ix not in ix_list])
+        
         dataset.columns = col_names
         return dataset
 
@@ -77,7 +82,9 @@ def clean_training_data(params):
         return list(map_iterator)
 
     # load data
-    df = load_dataset(filepath="./data/raw/training.1600000.processed.noemoticon.csv",
+    load_dir = os.path.join("..","data","1_raw","sentiment140",
+                            "training.1600000.processed.noemoticon.csv")
+    df = load_dataset(filepath=load_dir,
                       col_ix=[0, 5], 
                       col_names=['target', 'text'], 
                       ix_list=ix_list)
@@ -89,7 +96,14 @@ def clean_training_data(params):
     df.loc[df.target == 4, 'target'] = 1
     
     # save data
-    df.to_csv(''.join(["./data/clean/train_", str(num), ".csv"]), index=False)
+    save_dir = os.path.join("..","data","2_clean","sentiment140")
+    try:
+        os.stat(save_dir)
+    except:
+        os.mkdir(save_dir)
+
+    filename = "".join(["train_", str(num), ".csv"])
+    df.to_csv(os.path.join(save_dir, filename), index=False)
     
     # print our result
     result=''.join(["Saving cleaned up train dataset: ", str(num)])

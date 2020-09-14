@@ -62,16 +62,15 @@ def check_args():
 
 def initiate_api():
     
-    with open('./.conf/config.json', 'r') as f:
+    filepath = os.path.join("..",".conf","config.json")
+    with open(filepath, 'r') as f:
         config = json.load(f)
         
     auth = tweepy.OAuthHandler(
-        config["CONSUMER_KEY"], 
-        config["CONSUMER_SECRET"]
+        config["CONSUMER_KEY"], config["CONSUMER_SECRET"]
     )
     auth.set_access_token(
-        config["ACCESS_KEY"], 
-        config["ACCESS_SECRET"]
+        config["ACCESS_KEY"], config["ACCESS_SECRET"]
     )
     api = tweepy.API(auth, wait_on_rate_limit=True)
     return api
@@ -134,7 +133,7 @@ def save_raw_tweets(tweets):
     )
     
     now_prefix = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filepath = os.path.join("data","raw","tweets")
+    filepath = os.path.join("..","data","1_raw","tweets")
     
     if not os.path.exists(filepath):
         os.makedirs(filepath)
