@@ -15,25 +15,25 @@ def check_args():
     # error handling no args
     if len(sys.argv) < 2:
         print(
-            "ERROR: No default number of runs; must supply integer between 1 and 12:\
-            \nUSAGE: python ingest_tweets.py <nruns[1:12]> <ntweets=200[100:1000]>\
+            "ERROR: No default number of runs; must supply integer between 1 and 44:\
+            \nUSAGE: python ingest_tweets.py <nruns[1:44]> <ntweets=200[100:1000]>\
             ")
         sys.exit()
 
     # error handling first [mandatory] arg 
     try:
-        if int(sys.argv[1]) not in range(1,13):
+        if int(sys.argv[1]) not in range(1,45):
             print(
-                "ERROR: Number of runs must be an integer between 1 and 12:\
-                \nUSAGE: python ingest_tweets.py <nruns[1:12]> <ntweets=200[100:1000]>\
+                "ERROR: Number of runs must be an integer between 1 and 44:\
+                \nUSAGE: python ingest_tweets.py <nruns[1:44]> <ntweets=200[100:1000]>\
                 ")
             sys.exit()
         else:
             nruns = int(sys.argv[1])
     except ValueError:
         print(
-            "ERROR: Number of runs must be an integer between 1 and 12:\
-            \nUSAGE: python ingest_tweets.py <nruns[1:12]> <ntweets=200[100:1000]>\
+            "ERROR: Number of runs must be an integer between 1 and 44:\
+            \nUSAGE: python ingest_tweets.py <nruns[1:44]> <ntweets=200[100:1000]>\
             ")
         sys.exit()
         
@@ -47,7 +47,7 @@ def check_args():
             if int(sys.argv[2]) not in range(100, 1001):
                 print(
                     "ERROR: Number of tweets must be an integer between 100 and 1000:\
-                    \nUSAGE: python ingest_tweets.py <nruns[1:12]> <ntweets=200[100:1000]>\
+                    \nUSAGE: python ingest_tweets.py <nruns[1:44]> <ntweets=200[100:1000]>\
                     ")
                 sys.exit()
             else:
@@ -56,7 +56,7 @@ def check_args():
         except ValueError:
                 print(
                     "ERROR: Number of tweets must be an integer between 100 and 1000:\
-                    \nUSAGE: python ingest_tweets.py <nruns[1:12]> <ntweets=200[100:1000]>\
+                    \nUSAGE: python ingest_tweets.py <nruns[1:44]> <ntweets=200[100:1000]>\
                     ")
                 sys.exit()
 
