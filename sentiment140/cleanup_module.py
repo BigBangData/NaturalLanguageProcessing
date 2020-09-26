@@ -41,7 +41,7 @@ def clean_training_data(params):
             1. make lower case
             2. remove URLs
             3. unescape HTML entities
-            4. remove user references (including username) or hashtags, etc.
+            4. remove extraneous characters
             5. remove punctuation
             6. remove emojis
             7. discard non-ascii decodable text after utf-8 encoding
@@ -67,7 +67,7 @@ def clean_training_data(params):
         tweet = unescape(tweet)
         
         # 4     
-        pattern = r'\@\w+|\#|\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿\
+        pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿\
                     |\x82|\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
                     |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
         tweet = re.sub(pattern,'', tweet)
