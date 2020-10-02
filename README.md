@@ -1,9 +1,7 @@
 Twitter Sentiment Analysis
 ======================
-
-This is a twin to the QWERTY Effect project.
     
 TODO: 
     
     - README.md should be the presentation.
-    - Organize projects: too many goals, branches.
+    - Organize projects: too many goals (Sentiment Analysis, test QWERTY Effect, TF-IDF guide)
