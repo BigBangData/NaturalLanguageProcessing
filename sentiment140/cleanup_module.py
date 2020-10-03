@@ -12,6 +12,7 @@ from html import unescape
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 
 # TODO: redo cleanup function to return non-stemmed text for RSR calc.
 
@@ -48,8 +49,9 @@ def clean_training_data(params):
             8. tokenize
             9. filter stop words from tokens
             10. stem filtered tokens
+            11. lemmatize filtered tokens
             
-        The function returns a 3-tuple with cleaned versions 8 through 10.
+        The function returns a 4-tuple with cleaned versions 8 through 11.
         """
         # 1
         tweet = tweet.lower()
@@ -109,11 +111,16 @@ def clean_training_data(params):
         ps = PorterStemmer()
         filtered_stemmed_tokens = [ps.stem(token) for token in filtered_tokens]
             
+        # 11 tokenized + filtered + lemmatized
+        word_lem = WordNetLemmatizer()
+        filtered_lemmatized_tokens = [word_lem.lemmatize(token) for token in filtered_tokens]
+        
         v8 = " ".join(tweet_tokens)
         v9 = " ".join(filtered_tokens)
         v10 = " ".join(filtered_stemmed_tokens)  
+        v11 = " ".join(filtered_lemmatized_tokens)
         
-        return (v8, v9, v10)
+        return (v8, v9, v10, v11)    
 
     def vector_clean(list_):
         map_iterator = map(cleanup_tweet, list_)
@@ -127,12 +134,14 @@ def clean_training_data(params):
                       col_names=['target', 'text'], 
                       ix_list=ix_list)
 
-    # cleanup text, return list of 3-tuples
+    # cleanup text, return list of 4-tuples
     tuples = vector_clean(df.loc[:, 'text'])
 
-    # unpack 3-tuples
-    df.loc[:, 'tokenized'], df.loc[:, 'filtered'], df.loc[:, 'stemmed'] = \
-    [x[0] for x in tuples], [x[1] for x in tuples], [x[2] for x in tuples]
+    # unpack 4-tuples
+    df.loc[:, 'tokenized'], df.loc[:, 'filtered'] \
+    , df.loc[:, 'stemmed'], df.loc[:, 'lemmatized'] = \
+    [x[0] for x in tuples], [x[1] for x in tuples] \
+    , [x[2] for x in tuples], [x[3] for x in tuples]
 
     # make target {0,1} 
     df.loc[df.target == 4, 'target'] = 1
