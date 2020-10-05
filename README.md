@@ -14,5 +14,7 @@ NEXT TODO:
     - then pre-process
     - careful with IDF calculation (cache IDF)
     - calculate SVD
-    - etc.   
+    - etc. 
+    - standardize functions across sentiment140 and twitterbot
+    - purpose could be study of data drift
     
