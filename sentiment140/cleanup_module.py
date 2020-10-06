@@ -11,7 +11,6 @@ import concurrent.futures
 from html import unescape
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 
 # TODO: redo cleanup function to return non-stemmed text for RSR calc.
@@ -19,16 +18,8 @@ from nltk.stem import WordNetLemmatizer
 def clean_training_data(params):
     """Cleans Tweets for many known issues - not a general function but specifically
     tailored to the 1.6 M row training.1600000.processed.noemoticon.csv dataset.
-    
-    [TODO: some folks do not,ever,use spaces after punctuation.Believe it!Fix.]
     """
-    
-    # unpack parameters
-    ix_list, num = params
-
-    # instantiate url extractor
-    url_extractor = urlextract.URLExtract()
-
+    # define functions
     def load_dataset(filepath, col_ix, col_names, ix_list):
         
         dataset = pd.read_csv(filepath, encoding='latin-1', usecols=col_ix, 
@@ -48,100 +39,83 @@ def clean_training_data(params):
             7. discard non-ascii decodable text after utf-8 encoding
             8. tokenize
             9. filter stop words from tokens
-            10. stem filtered tokens
-            11. lemmatize filtered tokens
-            
-        The function returns a 4-tuple with cleaned versions 8 through 11.
-        """
-        # 1
-        tweet = tweet.lower()
+            10. lemmatize filtered tokens
 
-        # 2
-        # URL_pattern = r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*'
-        # tweet = re.sub(URL_pattern, '', tweet, flags=re.MULTILINE)
-        # better, albeit slower, version
-        urls = list(set(url_extractor.find_urls(tweet)))
+        The function returns the final lemmatized and filtered tokens.
+
+        Note: NLTK's set(stopwords.words('english')) is too comprehensive
+              so this uses the 25 semantically non-selective words from 
+              the Reuters-RCV1 dataset.
+        """
+        tweet = tweet.lower() # 1
+
+        urls = list(set(url_extractor.find_urls(tweet))) # 2
         if len(urls) > 0:
             for url in urls:
                 tweet = tweet.replace(url, "")
 
-        # 3
-        tweet = unescape(tweet)
-        
-        # 4     
-        pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿\
+        tweet = unescape(tweet) # 3
+
+        pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿\ 
                     |\x82|\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
                     |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
-        tweet = re.sub(pattern,'', tweet)
+        tweet = re.sub(pattern,'', tweet) # 4  
 
-        # 5
-        tweet = tweet.translate(str.maketrans('', '', string.punctuation))
+        tweet = tweet.translate(str.maketrans('', '', string.punctuation)) # 5
 
-        # 6
-        tweet = re.sub(r'[^\x00-\x7F]+', '', tweet).strip()       
-        
-        # 7
+        tweet = re.sub(r'[^\x00-\x7F]+', '', tweet).strip() # 6 
+
         def is_ascii(text):
             try:
-                text.encode(encoding='utf-8').decode('ascii')
+                text.encode(encoding='utf-8').decode('ascii')  # 7
             except UnicodeDecodeError:
                 return False
             else:
                 return True
-        
+
         if is_ascii(tweet) == False:
             return " "
         else:
             pass
-            
-        # 8 tokenized only (remove retweet prefix)
+
         tweet_tokens = word_tokenize(tweet)
         retweet = ['rt']
-        tweet_tokens = [token for token in tweet_tokens if not token in retweet]
-        
-        # 9 tokenized + filtered
-        # NLTK's set(stopwords.words('english')) removes too many words
-        # using list of 25 semantically non-selective words (Reuters-RCV1 dataset)
+        tweet_tokens = [token for token in tweet_tokens \ # 8
+                        if not token in retweet]
+
         stop_words = ['a','an','and','are','as','at','be','by','for','from',
                       'has','he','in','is','it','its','of','on','that','the',
                       'to','was','were','will','with'] 
-        filtered_tokens = [token for token in tweet_tokens if not token in stop_words]
-        
-        # 10 tokenized + filtered + stemmed
-        ps = PorterStemmer()
-        filtered_stemmed_tokens = [ps.stem(token) for token in filtered_tokens]
-            
-        # 11 tokenized + filtered + lemmatized
+        filtered_tokens = [token for token in tweet_tokens \ # 9
+                           if not token in stop_words]
+
         word_lem = WordNetLemmatizer()
-        filtered_lemmatized_tokens = [word_lem.lemmatize(token) for token in filtered_tokens]
-        
-        v8 = " ".join(tweet_tokens)
-        v9 = " ".join(filtered_tokens)
-        v10 = " ".join(filtered_stemmed_tokens)  
-        v11 = " ".join(filtered_lemmatized_tokens)
-        
-        return (v8, v9, v10, v11)    
+        filtered_lemmatized_tokens = [word_lem.lemmatize(token) \ # 10
+                                      for token in filtered_tokens]
+
+        return " ".join(filtered_lemmatized_tokens)
 
     def vector_clean(list_):
         map_iterator = map(cleanup_tweet, list_)
         return list(map_iterator)
 
+    # unpack parameters
+    ix_list, num = params
+
+    # instantiate url extractor
+    url_extractor = urlextract.URLExtract()
+    
     # load data
     load_dir = os.path.join("..","data","1_raw","sentiment140",
                             "training.1600000.processed.noemoticon.csv")
+    
     df = load_dataset(filepath=load_dir,
                       col_ix=[0, 5], 
                       col_names=['target', 'text'], 
                       ix_list=ix_list)
 
-    # cleanup text, return list of 4-tuples
-    tuples = vector_clean(df.loc[:, 'text'])
-
-    # unpack 4-tuples
-    df.loc[:, 'tokenized'], df.loc[:, 'filtered'] \
-    , df.loc[:, 'stemmed'], df.loc[:, 'lemmatized'] = \
-    [x[0] for x in tuples], [x[1] for x in tuples] \
-    , [x[2] for x in tuples], [x[3] for x in tuples]
+    # cleanup text
+    df.loc[:, 'lemmatized'] = vector_clean(df.loc[:, 'text'])
 
     # make target {0,1} 
     df.loc[df.target == 4, 'target'] = 1
@@ -156,7 +130,7 @@ def clean_training_data(params):
     filename = "".join(["train_", str(num), ".csv"])
     df.to_csv(os.path.join(save_dir, filename), index=False)
     
-    # print our result
+    # print out results
     result=''.join(["Saving cleaned up train dataset: ", str(num)])
     return result
 
@@ -204,7 +178,7 @@ def run_processes():
         # we loop over to yield results of our processes as they're completed
         for f in concurrent.futures.as_completed(results):
             print(f.result())
-
+            
 
 if __name__ == '__main__':
 
