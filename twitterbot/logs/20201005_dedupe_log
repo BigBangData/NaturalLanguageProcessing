@@ -1,19 +1,15 @@
-Date: 2020-10-05
-Time: 19:26:14
-
-
-Tweet deduplication
----------------------------------------------
-Loading...
-
-Raw data nrows: 975400
-Deduping...
-
-% dupes: 25.28
-Deduped data nrows: 728838
-% diff in target (Polarity): 5.82
-Saving...
-
-Deduplication successful.
-Time elapsed: 13.36 secs.
----------------------------------------------
+10-05 21:58 root         INFO     Date: 2020-10-05
+10-05 21:58 root         INFO     Time: 21:58:31
+10-05 21:58 root         INFO     Tweet deduplication
+10-05 21:58 root         INFO     Loading...
+10-05 21:58 load         INFO     Loading time: 6.6878 secs.
+10-05 21:58 load         INFO     Raw data nrows: 975400
+10-05 21:58 dedup        INFO     Deduping...
+10-05 21:58 dedup        INFO     Dedupe time: 0.4815 secs.
+10-05 21:58 dedup        INFO     Deduped data nrows: 728838
+10-05 21:58 dedup        INFO     % dupes: 25.28
+10-05 21:58 dedup        INFO     % diff in target (Polarity): 5.82
+10-05 21:58 save         INFO     Saving...
+10-05 21:58 root         INFO     Deduplication successful.
+10-05 21:58 root         INFO     See ..\data\1.2_deduped\tweets\20201005_deduped_tweets.csv for data.
+10-05 21:58 root         INFO     Time elapsed: 13.6694 secs.
