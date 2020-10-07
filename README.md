@@ -1,16 +1,21 @@
 Twitter Sentiment Analysis
 ======================
     
+	
+DONE:
+    - removed logger.info() from filelock.py 
+
 TODO: 
     
     - README.md should be the presentation
     - Organize projects: too many goals (Sentiment Analysis, test QWERTY Effect, TF-IDF guide)
-    
+    - Main purpose could be study of data drift, sentiment140 vs new 1.6M Tweets from twitterbot
+   
 NEXT TODO:
 
-    - Rename data folders for dedupe/cleanup flow of twitterbot
-    - print out more detail for twitterbot cleanup? (print and log?)
-    - multi-processing for twitterbot cleanup? (takes 8 mins...)
+    - multi-processing for twitterbot cleanup.py (use mod to determine remainder after div by 50k)
+
+    - copy changes to/from sentiment140 and twitterbot
 
     - Restructured entire project: follow IntroToTextAnalytics workflow
     - split train/test data while raw
@@ -21,4 +26,3 @@ NEXT TODO:
     - etc. 
     - standardize functions across sentiment140 and twitterbot
     - purpose could be study of data drift
-    
