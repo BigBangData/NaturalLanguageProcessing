@@ -85,7 +85,7 @@ if __name__=="__main__":
     logger2.info('Deduping...')
     start_dedup = time.time()
     
-    # dedupe
+    # dedupe 
     dupes = df[df['Text'].duplicated(keep='first')]
     deduped_df = df[~df.ID.isin(dupes['ID'])]
     # reset index
@@ -111,7 +111,7 @@ if __name__=="__main__":
     today_prefix = datetime.datetime.now().strftime("%Y%m%d")
     filename = ''.join([today_prefix, "_deduped_tweets.csv"])
 
-    df.to_csv(os.path.join(filepath, filename), index=False)
+    deduped_df.to_csv(os.path.join(filepath, filename), index=False)
     
     elapsed_time = round(time.time() - start_time, 4)
     

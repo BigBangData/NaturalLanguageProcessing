@@ -6,8 +6,8 @@ import re
 import sys
 import json
 import time
-
 import string
+import logging
 import datetime
 import urlextract
 import pandas as pd
@@ -17,10 +17,26 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
+def setup_logger(log_path):
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        datefmt='%m-%d %H:%M',
+                        filename=log_path,
+                        filemode='w')
+    # define a Handler which writes INFO messages or higher to the sys.stderr
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # set a format which is simpler for console use
+    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+    # tell the handler to use this format
+    console.setFormatter(formatter)
+    # add the handler to the root logger
+    logging.getLogger().addHandler(console)
+    
 def load_data():
     """Loads most recent deduped version.
     """
-    dirpath = os.path.join("..","data","2_deduped","tweets") 
+    dirpath = os.path.join("..","data","1.2_deduped","tweets") 
     filename = sorted(os.listdir(dirpath), reverse=True)[0]
     filepath = os.path.join(dirpath, filename)
     df = pd.read_csv(filepath)
@@ -113,10 +129,10 @@ def cleanup_tweet(tweet):
 if __name__=="__main__":
 
     # start counter 
-    start = time.time()
+    start_time = time.time()
 
     # get date and time 
-    dt_object = datetime.datetime.fromtimestamp(start)
+    dt_object = datetime.datetime.fromtimestamp(start_time)
     dt_object = str(dt_object).split('.')[0]
     Date, Time = dt_object.split(' ')
 
@@ -129,37 +145,59 @@ if __name__=="__main__":
 
     log_name = Date.replace('-', '') + '_cleanup_log'
     log_path = os.path.join(log_dir, log_name)
-
-    # redirect stdout to log 
-    stdoutOrigin = sys.stdout 
-    sys.stdout = open(log_path, "w")
-    print('Date: ' + Date)
-    print('Time: ' + Time)
-    print('\n')
-    print('Tweet cleanup')
-    print('-' * 45)
+    
+    setup_logger(log_path)
+    
+    logger1 = logging.getLogger('load')
+    logger2 = logging.getLogger('cleanup')
+    logger3 = logging.getLogger('save') 
+    
+    logging.info('Date: ' + Date)
+    logging.info('Time: ' + Time)
+    logging.info('Tweet cleanup')
 
     # load
-    print('Loading...\n')
-    df = load_data()
-
+    logging.info('Loading...')
+    start_load = time.time()
+    try:
+        df = load_data()
+    except OSError as e:
+        logger1.error('Could not load data')
+        logger1.error(e)
+        logger1.debug('Check file permissions or extra folder')
+        sys.exit(1)
+        
+    load_time = round(time.time() - start_load, 4)
+    logger1.info('Loading time: ' + str(load_time) + ' secs.')
+    logger1.info('Deduped data cols: ' + ', '.join(list(df.columns)))
+    logger1.info('Deduped data nrows: ' + str(df.shape[0]))
+                 
     # create retweet col
     # Note: RT is uppercase, this has to be before cleanup
+    logger2.info('Creating Retweet column.')
     df['Retweet'] = map_is_retweet(df['Text'].values)
     
-    # cleanup Tweet text
-    print('Cleaning...\n')
+    # cleanup
+    logger2.info('Cleaning up text column...')
+    start_cleanup = time.time()
     url_extractor = urlextract.URLExtract()
     df.loc[:, 'Lemmatized'] = [cleanup_tweet(tweet) for tweet in df.loc[:,'Text']]
 
+    cleanup_time = round(time.time() - start_cleanup, 4)
+    logger2.info('Cleanup time: ' +str(cleanup_time) + ' secs.')
+
     # create textlen col
+    logger2.info('Creating text length column...')    
     df['Textlen'] = calc_textlen(df['Lemmatized'].values)
 
     # create a subset with cols of interest
+    logger2.info('Subsetting columns...')
     df = df[['Polarity','Lemmatized','Retweet','Textlen']].copy()
 
     # save
-    print('Saving...\n')
+    logger3.info('Saving...')  
+    logger3.info('Cleaned data cols: ' + ', '.join(list(df.columns)))
+    
     filepath = os.path.join("..","data","2_clean","tweets")
     if not os.path.exists(filepath):
         os.makedirs(filepath)
@@ -168,16 +206,11 @@ if __name__=="__main__":
     filename = ''.join([today_prefix, "_tweets.csv"])
 
     df.to_csv(os.path.join(filepath, filename), index=False)
+   
+    elapsed_time = round(time.time() - start_time, 4)
     
-    end = time.time()
-    elapsed = round(end-start, 2)
-    
-    print('Cleanup successful.')
-    print('Time elapsed: ' + str(elapsed) + ' secs.')
-    print('-' * 45)
-    
-    # finish log 
-    sys.stdout.close()
-    sys.stdout=stdoutOrigin
-
-    print('Script complete. See logs folder.')
+    logging.info('Cleanup successful.')
+    logging.info('See ' +str(os.path.join(filepath, filename)) + ' for data.')
+    logging.info('Time elapsed: ' + str(elapsed_time) + ' secs.')
+ 
+    print('Script complete. See ' + log_path)
