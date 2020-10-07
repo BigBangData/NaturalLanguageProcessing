@@ -13,8 +13,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-# TODO: redo cleanup function to return non-stemmed text for RSR calc.
-
 def clean_training_data(params):
     """Cleans Tweets for many known issues - not a general function but specifically
     tailored to the 1.6 M row training.1600000.processed.noemoticon.csv dataset.
