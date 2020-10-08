@@ -2,15 +2,15 @@ Twitter Sentiment Analysis
 ======================
 
 
-TODO: 
+FINAL TODO: 
     
     - README.md should be the presentation
     - Organize projects: too many goals (Sentiment Analysis, test QWERTY Effect, TF-IDF guide)
     - Main purpose could be study of data drift, sentiment140 vs new 1.6M Tweets from twitterbot
    
-NEXT TODO:
+NOW TODO:
 
-	- console logging ok, not so much logs
+    - console logging ok, logs not so much bc of multiprocessing: redirect stdout?
     - multi-processing for twitterbot cleanup.py (use mod to determine remainder after div by 50k)
     - copy changes to/from sentiment140 and twitterbot
     - Restructured entire project: follow IntroToTextAnalytics workflow
