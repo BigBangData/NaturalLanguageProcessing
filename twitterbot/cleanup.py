@@ -11,6 +11,7 @@ import logging
 import datetime
 import urlextract
 import pandas as pd
+import concurrent.futures
 
 from html import unescape
 from nltk.corpus import stopwords
@@ -32,14 +33,20 @@ def setup_logger(log_path):
     console.setFormatter(formatter)
     # add the handler to the root logger
     logging.getLogger().addHandler(console)
-    
-def load_data():
+
+def load_data(ix_list):
     """Loads most recent deduped version.
     """
-    dirpath = os.path.join("..","data","1.2_deduped","tweets") 
+    dirpath = os.path.join("..","data","1.2_deduped","tweets")
     filename = sorted(os.listdir(dirpath), reverse=True)[0]
     filepath = os.path.join(dirpath, filename)
-    df = pd.read_csv(filepath)
+    # only read relevant rows
+    df = pd.read_csv(
+            filepath, 
+            encoding='latin-1',
+            skiprows=[ix for ix in range(1600001) if ix not in ix_list]
+    )
+    df.columns = ['ID','Timestamp','User','Text','Polarity'] 
     return df
 
 def is_retweet(col):
@@ -57,7 +64,7 @@ def calc_textlen(col):
     bool_map = map(lambda x: len(x), col)
     return(list(bool_map))
 
-def cleanup_tweet(tweet):
+def cleanup_tweet(tweet, url_extractor):
     """Cleans up a tweet with the following steps:
         1. make lower case
         2. remove URLs
@@ -75,7 +82,7 @@ def cleanup_tweet(tweet):
     Note: NLTK's set(stopwords.words('english')) is too comprehensive
           so this uses the 25 semantically non-selective words from 
           the Reuters-RCV1 dataset.
-    """
+    """    
     tweet = tweet.lower() # 1
 
     urls = list(set(url_extractor.find_urls(tweet))) # 2
@@ -125,8 +132,85 @@ def cleanup_tweet(tweet):
     
     return " ".join(filtered_lemmatized_tokens)
 
+def clean_training_data(params):
+       
+    # unpack parameters
+    ix_list, num = params
+	
+    start_time = time.time()
+	
+    # get date and time 
+    dt_object = datetime.datetime.fromtimestamp(start_time)
+    dt_object = str(dt_object).split('.')[0]
+    Date, Time = dt_object.split(' ')
 
-if __name__=="__main__":
+    log_name = Date.replace('-', '') + '_cleanup_log'
+    log_path = os.path.join('logs', log_name)
+	
+    setup_logger(log_path)
+
+    logger1 = logging.getLogger('train.load')
+    logger2 = logging.getLogger('train.clean')
+    logger3 = logging.getLogger('train.save') 
+    
+    try:
+        df = load_data(ix_list)
+        read_ix_list = ' '.join([str(min(ix_list)+1), '-', str(max(ix_list))])
+        logger1.info(''.join(['Loading subset ', str(num), ', rows: ', read_ix_list]))
+    except OSError as e:
+        logger1.info('Could not load data. Check file permissions.')
+        logger1.debug(e)
+        sys.exit(1)
+        
+    # create retweet col
+    # Note: RT is uppercase, this has to be before cleanup
+    df['Retweet'] = map_is_retweet(df['Text'].values)
+    
+    # cleanup
+    logger2.info(''.join(['Cleaning subset ', str(num), '...']))
+    # initiate url extractor
+    url_extractor = urlextract.URLExtract()
+    df.loc[:, 'Lemmatized'] = [cleanup_tweet(tweet, url_extractor) for tweet in df.loc[:,'Text']]
+    
+    # Textlen col    
+    df['Textlen'] = calc_textlen(df['Lemmatized'].values)
+
+    # subset with cols of interest
+    df = df[['Polarity','Lemmatized','Retweet','Textlen']].copy()
+
+    save_dir = os.path.join("..","data","2_clean","tweets")   
+    today_prefix = datetime.datetime.now().strftime("%Y%m%d")
+    filename = "".join([today_prefix, "_train_", str(num), ".csv"])
+    df.to_csv(os.path.join(save_dir, filename), index=False)
+
+    logger3.info(''.join(["Saving clean subset: ", str(num)]))
+
+
+def main():
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+
+        params_list = [
+                       (range(     0,    50001),  1),
+                       (range(  50000,  100001),  2),
+                       (range( 100000,  150001),  3),
+                       (range( 150000,  200001),  4),
+                       (range( 200000,  250001),  5),
+                       (range( 250000,  300001),  6),
+                       (range( 300000,  350001),  7),
+                       (range( 350000,  400001),  8),
+                       (range( 400000,  450001),  9),
+                       (range( 450000,  500001), 10),
+                       (range( 500000,  550001), 11),
+                       (range( 550000,  600001), 12),
+                       (range( 600000,  650001), 13),
+                       (range( 650000,  700001), 14),
+                       (range( 700000,  750001), 15)
+                      ]
+        
+        results = [executor.submit(clean_training_data, p) for p in params_list]
+            
+
+if __name__ == '__main__':
 
     # start counter 
     start_time = time.time()
@@ -135,82 +219,37 @@ if __name__=="__main__":
     dt_object = datetime.datetime.fromtimestamp(start_time)
     dt_object = str(dt_object).split('.')[0]
     Date, Time = dt_object.split(' ')
-
-    # setup log dir
-    log_dir = os.path.join("logs")
+    
+    # setup loggging
     try:
-        os.stat(log_dir)
+        os.stat('logs')
     except:
-        os.mkdir(log_dir)
+        os.mkdir('logs')
 
     log_name = Date.replace('-', '') + '_cleanup_log'
-    log_path = os.path.join(log_dir, log_name)
-    
+    log_path = os.path.join('logs', log_name)
+	
     setup_logger(log_path)
-    
-    logger1 = logging.getLogger('load')
-    logger2 = logging.getLogger('cleanup')
-    logger3 = logging.getLogger('save') 
     
     logging.info('Date: ' + Date)
     logging.info('Time: ' + Time)
     logging.info('Tweet cleanup')
 
-    # load
-    logging.info('Loading...')
-    start_load = time.time()
+    # save dir
+    save_dir = os.path.join("..","data","2_clean","tweets")
     try:
-        df = load_data()
-    except OSError as e:
-        logger1.error('Could not load data')
-        logger1.error(e)
-        logger1.debug('Check file permissions or extra folder')
-        sys.exit(1)
+        os.path.exists(save_dir)
+    except:
+        os.makedirs(save_dir)
         
-    load_time = round(time.time() - start_load, 4)
-    logger1.info('Loading time: ' + str(load_time) + ' secs.')
-    logger1.info('Deduped data cols: ' + ', '.join(list(df.columns)))
-    logger1.info('Deduped data nrows: ' + str(df.shape[0]))
-                 
-    # create retweet col
-    # Note: RT is uppercase, this has to be before cleanup
-    logger2.info('Creating Retweet column.')
-    df['Retweet'] = map_is_retweet(df['Text'].values)
-    
-    # cleanup
-    logger2.info('Cleaning up text column...')
-    start_cleanup = time.time()
-    url_extractor = urlextract.URLExtract()
-    df.loc[:, 'Lemmatized'] = [cleanup_tweet(tweet) for tweet in df.loc[:,'Text']]
+    # run processes
+    main()
 
-    cleanup_time = round(time.time() - start_cleanup, 4)
-    logger2.info('Cleanup time: ' +str(cleanup_time) + ' secs.')
-
-    # create textlen col
-    logger2.info('Creating text length column...')    
-    df['Textlen'] = calc_textlen(df['Lemmatized'].values)
-
-    # create a subset with cols of interest
-    logger2.info('Subsetting columns...')
-    df = df[['Polarity','Lemmatized','Retweet','Textlen']].copy()
-
-    # save
-    logger3.info('Saving...')  
-    logger3.info('Cleaned data cols: ' + ', '.join(list(df.columns)))
-    
-    filepath = os.path.join("..","data","2_clean","tweets")
-    if not os.path.exists(filepath):
-        os.makedirs(filepath)
-
-    today_prefix = datetime.datetime.now().strftime("%Y%m%d")
-    filename = ''.join([today_prefix, "_tweets.csv"])
-
-    df.to_csv(os.path.join(filepath, filename), index=False)
-   
+    # finish counter
     elapsed_time = round(time.time() - start_time, 4)
     
+    # print results
     logging.info('Cleanup successful.')
-    logging.info('See ' +str(os.path.join(filepath, filename)) + ' for data.')
+    logging.info(''.join(['See ', str(log_path)]))
+    logging.info('See ' +str(os.path.join(save_dir)) + ' for data.')
     logging.info('Time elapsed: ' + str(elapsed_time) + ' secs.')
- 
-    print('Script complete. See ' + log_path)

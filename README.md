@@ -13,10 +13,9 @@ TODO:
    
 NEXT TODO:
 
+	- console logging ok, not so much logs
     - multi-processing for twitterbot cleanup.py (use mod to determine remainder after div by 50k)
-
     - copy changes to/from sentiment140 and twitterbot
-
     - Restructured entire project: follow IntroToTextAnalytics workflow
     - split train/test data while raw
     - then cleanup
