@@ -1,9 +1,6 @@
 Twitter Sentiment Analysis
 ======================
-    
-	
-DONE:
-    - removed logger.info() from filelock.py 
+
 
 TODO: 
     
