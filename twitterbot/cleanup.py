@@ -16,8 +16,8 @@ from html import unescape
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-	
-	
+
+
 def load_data(ix_list):
     """Loads most recent deduped version.
     """
@@ -120,7 +120,7 @@ def clean_training_data(params):
        
     # unpack parameters
     ix_list, num = params
-	
+
     try:
         df = load_data(ix_list)
         read_ix_list = ' '.join([str(min(ix_list)+1), '-', str(max(ix_list))])
@@ -152,11 +152,11 @@ def clean_training_data(params):
     msg3 = ''.join(["Saving clean subset: ", str(num)])
     return (msg, msg2, msg3)
 
-	
+
 def main():
     with concurrent.futures.ProcessPoolExecutor() as executor:
 
-        params_list = [		
+        params_list = [
                        (range(     0,    50001),  1),
                        (range(  50000,  100001),  2),
                        (range( 100000,  150001),  3),
@@ -171,7 +171,24 @@ def main():
                        (range( 550000,  600001), 12),
                        (range( 600000,  650001), 13),
                        (range( 650000,  700001), 14),
-                       (range( 700000,  750001), 15)
+                       (range( 700000,  750001), 15),
+                       (range( 750000,  800001), 16),
+                       (range( 800000,  850001), 17),
+                       (range( 850000,  900001), 18),
+                       (range( 900000,  950001), 19),
+                       (range( 950000, 1000001), 20),
+                       (range(1000000, 1050001), 21),
+                       (range(1050000, 1100001), 22),
+                       (range(1100000, 1150001), 23),
+                       (range(1150000, 1200001), 24),
+                       (range(1200000, 1250001), 25),
+                       (range(1250000, 1300001), 26),
+                       (range(1300000, 1350001), 27),
+                       (range(1350000, 1400001), 28),
+                       (range(1400000, 1450001), 29),
+                       (range(1450000, 1500001), 30),
+                       (range(1500000, 1550001), 31),
+                       (range(1550000, 1600001), 32)
                       ]
         
         results = [executor.submit(clean_training_data, p) for p in params_list]
@@ -186,7 +203,7 @@ if __name__ == '__main__':
 
     # start counter 
     start_time = time.time()
-	
+
     # get date and time 
     dt_object = datetime.datetime.fromtimestamp(start_time)
     dt_object = str(dt_object).split('.')[0]
@@ -200,8 +217,8 @@ if __name__ == '__main__':
 
     log_name = Date.replace('-', '') + '_cleanup_log'
     log_path = os.path.join('logs', log_name)
-	
-	# redirect stdout to log 
+
+    # redirect stdout to log 
     stdoutOrigin = sys.stdout 
     sys.stdout = open(log_path, "w")
 
@@ -223,7 +240,7 @@ if __name__ == '__main__':
     print(''.join(['See ', str(log_path)]))
     print('See ' +str(os.path.join(save_dir)) + ' for data.')
     print('Time elapsed: ' + str(elapsed_time) + ' secs.')
-	
+
     # close log file 
     sys.stdout.close()
     sys.stdout=stdoutOrigin
