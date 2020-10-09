@@ -10,8 +10,6 @@ FINAL TODO:
    
 NOW TODO:
 
-    - console logging ok, logs not so much bc of multiprocessing: redirect stdout?
-    - multi-processing for twitterbot cleanup.py (use mod to determine remainder after div by 50k)
     - copy changes to/from sentiment140 and twitterbot
     - Restructured entire project: follow IntroToTextAnalytics workflow
     - split train/test data while raw
