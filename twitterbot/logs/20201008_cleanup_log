@@ -1,0 +1,19 @@
+('Loading subset 6, rows: 250001 - 300000', 'Cleaning subset 6...', 'Saving clean subset: 6')
+('Loading subset 1, rows: 1 - 50000', 'Cleaning subset 1...', 'Saving clean subset: 1')
+('Loading subset 4, rows: 150001 - 200000', 'Cleaning subset 4...', 'Saving clean subset: 4')
+('Loading subset 5, rows: 200001 - 250000', 'Cleaning subset 5...', 'Saving clean subset: 5')
+('Loading subset 7, rows: 300001 - 350000', 'Cleaning subset 7...', 'Saving clean subset: 7')
+('Loading subset 8, rows: 350001 - 400000', 'Cleaning subset 8...', 'Saving clean subset: 8')
+('Loading subset 3, rows: 100001 - 150000', 'Cleaning subset 3...', 'Saving clean subset: 3')
+('Loading subset 2, rows: 50001 - 100000', 'Cleaning subset 2...', 'Saving clean subset: 2')
+('Loading subset 15, rows: 700001 - 750000', 'Cleaning subset 15...', 'Saving clean subset: 15')
+('Loading subset 9, rows: 400001 - 450000', 'Cleaning subset 9...', 'Saving clean subset: 9')
+('Loading subset 12, rows: 550001 - 600000', 'Cleaning subset 12...', 'Saving clean subset: 12')
+('Loading subset 11, rows: 500001 - 550000', 'Cleaning subset 11...', 'Saving clean subset: 11')
+('Loading subset 13, rows: 600001 - 650000', 'Cleaning subset 13...', 'Saving clean subset: 13')
+('Loading subset 10, rows: 450001 - 500000', 'Cleaning subset 10...', 'Saving clean subset: 10')
+('Loading subset 14, rows: 650001 - 700000', 'Cleaning subset 14...', 'Saving clean subset: 14')
+Cleanup successful.
+See logs\20201008_cleanup_log
+See ..\data\2_clean\tweets for data.
+Time elapsed: 114.7432 secs.

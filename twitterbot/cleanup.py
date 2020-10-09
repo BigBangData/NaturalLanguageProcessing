@@ -7,7 +7,6 @@ import sys
 import json
 import time
 import string
-import logging
 import datetime
 import urlextract
 import pandas as pd
@@ -17,23 +16,8 @@ from html import unescape
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-
-def setup_logger(log_path):
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                        datefmt='%m-%d %H:%M',
-                        filename=log_path,
-                        filemode='w')
-    # define a Handler which writes INFO messages or higher to the sys.stderr
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    # set a format which is simpler for console use
-    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-    # tell the handler to use this format
-    console.setFormatter(formatter)
-    # add the handler to the root logger
-    logging.getLogger().addHandler(console)
-
+	
+	
 def load_data(ix_list):
     """Loads most recent deduped version.
     """
@@ -137,37 +121,19 @@ def clean_training_data(params):
     # unpack parameters
     ix_list, num = params
 	
-    start_time = time.time()
-	
-    # get date and time 
-    dt_object = datetime.datetime.fromtimestamp(start_time)
-    dt_object = str(dt_object).split('.')[0]
-    Date, Time = dt_object.split(' ')
-
-    log_name = Date.replace('-', '') + '_cleanup_log'
-    log_path = os.path.join('logs', log_name)
-	
-    setup_logger(log_path)
-
-    logger1 = logging.getLogger('train.load')
-    logger2 = logging.getLogger('train.clean')
-    logger3 = logging.getLogger('train.save') 
-    
     try:
         df = load_data(ix_list)
         read_ix_list = ' '.join([str(min(ix_list)+1), '-', str(max(ix_list))])
-        logger1.info(''.join(['Loading subset ', str(num), ', rows: ', read_ix_list]))
+        msg = ''.join(['Loading subset ', str(num), ', rows: ', read_ix_list])
     except OSError as e:
-        logger1.info('Could not load data. Check file permissions.')
-        logger1.debug(e)
-        sys.exit(1)
+        msg = 'Could not load data. Check file permissions.'
         
     # create retweet col
     # Note: RT is uppercase, this has to be before cleanup
     df['Retweet'] = map_is_retweet(df['Text'].values)
     
     # cleanup
-    logger2.info(''.join(['Cleaning subset ', str(num), '...']))
+    msg2 = ''.join(['Cleaning subset ', str(num), '...'])
     # initiate url extractor
     url_extractor = urlextract.URLExtract()
     df.loc[:, 'Lemmatized'] = [cleanup_tweet(tweet, url_extractor) for tweet in df.loc[:,'Text']]
@@ -183,13 +149,14 @@ def clean_training_data(params):
     filename = "".join([today_prefix, "_train_", str(num), ".csv"])
     df.to_csv(os.path.join(save_dir, filename), index=False)
 
-    logger3.info(''.join(["Saving clean subset: ", str(num)]))
+    msg3 = ''.join(["Saving clean subset: ", str(num)])
+    return (msg, msg2, msg3)
 
-
+	
 def main():
     with concurrent.futures.ProcessPoolExecutor() as executor:
 
-        params_list = [
+        params_list = [		
                        (range(     0,    50001),  1),
                        (range(  50000,  100001),  2),
                        (range( 100000,  150001),  3),
@@ -208,13 +175,18 @@ def main():
                       ]
         
         results = [executor.submit(clean_training_data, p) for p in params_list]
-            
+  
+        # get results with the as_completed function, which gives us an iterator 
+        # we loop over to yield results of our processes as they're completed
+        for f in concurrent.futures.as_completed(results):
+            print(f.result())
+
 
 if __name__ == '__main__':
 
     # start counter 
     start_time = time.time()
-
+	
     # get date and time 
     dt_object = datetime.datetime.fromtimestamp(start_time)
     dt_object = str(dt_object).split('.')[0]
@@ -229,11 +201,9 @@ if __name__ == '__main__':
     log_name = Date.replace('-', '') + '_cleanup_log'
     log_path = os.path.join('logs', log_name)
 	
-    setup_logger(log_path)
-    
-    logging.info('Date: ' + Date)
-    logging.info('Time: ' + Time)
-    logging.info('Tweet cleanup')
+	# redirect stdout to log 
+    stdoutOrigin = sys.stdout 
+    sys.stdout = open(log_path, "w")
 
     # save dir
     save_dir = os.path.join("..","data","2_clean","tweets")
@@ -245,11 +215,15 @@ if __name__ == '__main__':
     # run processes
     main()
 
-    # finish counter
+    # end counter
     elapsed_time = round(time.time() - start_time, 4)
     
     # print results
-    logging.info('Cleanup successful.')
-    logging.info(''.join(['See ', str(log_path)]))
-    logging.info('See ' +str(os.path.join(save_dir)) + ' for data.')
-    logging.info('Time elapsed: ' + str(elapsed_time) + ' secs.')
+    print('Cleanup successful.')
+    print(''.join(['See ', str(log_path)]))
+    print('See ' +str(os.path.join(save_dir)) + ' for data.')
+    print('Time elapsed: ' + str(elapsed_time) + ' secs.')
+	
+    # close log file 
+    sys.stdout.close()
+    sys.stdout=stdoutOrigin
