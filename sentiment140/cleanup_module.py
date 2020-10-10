@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-
 import os
 import re
+import sys
 import time
 import string
 import urlextract
@@ -13,21 +13,33 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-def clean_training_data(params):
-    """Cleans Tweets for many known issues - not a general function but specifically
-    tailored to the 1.6 M row training.1600000.processed.noemoticon.csv dataset.
+def clean_data(params):
+    """Wrapper for cleanup_tweet multi-processing which loads 50k-row chunks 
+       of a maximum 1.2M-row dataset (size of our train data) and cleans up
+       chunks in asynchronous and parallel manner.
+       Args
+       ----
+           params : (X_name, ix_list, num)
+               X_name  : name of train or test set w/ cols: ID, Username, Text
+               ix_list : a 50k range of row indices (ix) for data chunks
+                   num : a chunk number
     """
-    # define functions
-    def load_dataset(filepath, col_ix, col_names, ix_list):
-        
+    def load_subset(filepath, col_ix, col_names, ix_list):
+        """Loads a subset of the train or test data.
+           Args
+           ----
+               filepath  : path to X
+               col_ix    : indices for cols
+               col_names : names of cols
+               ix_list   : indices of rows
+        """
         dataset = pd.read_csv(filepath, encoding='latin-1', usecols=col_ix, 
-                              skiprows=[ix for ix in range(1600001) if ix not in ix_list])
-        
+                              skiprows=[ix for ix in range(1200001) if ix not in ix_list])
         dataset.columns = col_names
         return dataset
 
     def cleanup_tweet(tweet):
-        """Cleans up a tweet with the following steps:
+        """Cleans up a tweet's text with the following steps:
             1. make lower case
             2. remove URLs
             3. unescape HTML entities
@@ -45,27 +57,27 @@ def clean_training_data(params):
               so this uses the 25 semantically non-selective words from 
               the Reuters-RCV1 dataset.
         """
-        tweet = tweet.lower() # 1
+        tweet = tweet.lower()
 
-        urls = list(set(url_extractor.find_urls(tweet))) # 2
+        urls = list(set(url_extractor.find_urls(tweet)))
         if len(urls) > 0:
             for url in urls:
                 tweet = tweet.replace(url, "")
 
-        tweet = unescape(tweet) # 3
+        tweet = unescape(tweet)
 
-        pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿\ 
-                    |\x82|\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
+        pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿|\x82\
+                    |\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
                     |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
-        tweet = re.sub(pattern,'', tweet) # 4  
+        tweet = re.sub(pattern,'', tweet) 
 
-        tweet = tweet.translate(str.maketrans('', '', string.punctuation)) # 5
+        tweet = tweet.translate(str.maketrans('', '', string.punctuation))
 
-        tweet = re.sub(r'[^\x00-\x7F]+', '', tweet).strip() # 6 
+        tweet = re.sub(r'[^\x00-\x7F]+', '', tweet).strip()
 
         def is_ascii(text):
             try:
-                text.encode(encoding='utf-8').decode('ascii')  # 7
+                text.encode(encoding='utf-8').decode('ascii')
             except UnicodeDecodeError:
                 return False
             else:
@@ -78,17 +90,17 @@ def clean_training_data(params):
 
         tweet_tokens = word_tokenize(tweet)
         retweet = ['rt']
-        tweet_tokens = [token for token in tweet_tokens \ # 8
+        tweet_tokens = [token for token in tweet_tokens \
                         if not token in retweet]
 
         stop_words = ['a','an','and','are','as','at','be','by','for','from',
                       'has','he','in','is','it','its','of','on','that','the',
                       'to','was','were','will','with'] 
-        filtered_tokens = [token for token in tweet_tokens \ # 9
+        filtered_tokens = [token for token in tweet_tokens \
                            if not token in stop_words]
 
         word_lem = WordNetLemmatizer()
-        filtered_lemmatized_tokens = [word_lem.lemmatize(token) \ # 10
+        filtered_lemmatized_tokens = [word_lem.lemmatize(token) \
                                       for token in filtered_tokens]
 
         return " ".join(filtered_lemmatized_tokens)
@@ -98,25 +110,24 @@ def clean_training_data(params):
         return list(map_iterator)
 
     # unpack parameters
-    ix_list, num = params
+    X_name, ix_list, num = params
 
     # instantiate url extractor
     url_extractor = urlextract.URLExtract()
     
     # load data
-    load_dir = os.path.join("..","data","1_raw","sentiment140",
-                            "training.1600000.processed.noemoticon.csv")
+    load_dir = os.path.join("..","data","1_raw","sentiment140", X_name)
     
-    df = load_dataset(filepath=load_dir,
-                      col_ix=[0, 5], 
-                      col_names=['target', 'text'], 
-                      ix_list=ix_list)
+    df = load_subset(filepath=load_dir,
+                     col_ix=[2,3], 
+                     col_names=['username','text'], 
+                     ix_list=ix_list)
 
     # cleanup text
     df.loc[:, 'lemmatized'] = vector_clean(df.loc[:, 'text'])
-
-    # make target {0,1} 
-    df.loc[df.target == 4, 'target'] = 1
+    
+    # calculate textlen and usernamelen
+    ### TODO
     
     # save data
     save_dir = os.path.join("..","data","2_clean","sentiment140")
@@ -126,51 +137,43 @@ def clean_training_data(params):
         os.mkdir(save_dir)
 
     filename = "".join(["train_", str(num), ".csv"])
-    df.to_csv(os.path.join(save_dir, filename), index=False)
+    df.to_csv(os.path.join(save_dir, filename), index=True)
     
     # print out results
     result=''.join(["Saving cleaned up train dataset: ", str(num)])
     return result
 
-def run_processes():
+def main(X_name):
     with concurrent.futures.ProcessPoolExecutor() as executor:
 
         params_list = [
-                       (range(     0,    50001),  1),
-                       (range(  50000,  100001),  2),
-                       (range( 100000,  150001),  3),
-                       (range( 150000,  200001),  4),
-                       (range( 200000,  250001),  5),
-                       (range( 250000,  300001),  6),
-                       (range( 300000,  350001),  7),
-                       (range( 350000,  400001),  8),
-                       (range( 400000,  450001),  9),
-                       (range( 450000,  500001), 10),
-                       (range( 500000,  550001), 11),
-                       (range( 550000,  600001), 12),
-                       (range( 600000,  650001), 13),
-                       (range( 650000,  700001), 14),
-                       (range( 700000,  750001), 15),
-                       (range( 750000,  800001), 16),
-                       (range( 800000,  850001), 17),
-                       (range( 850000,  900001), 18),
-                       (range( 900000,  950001), 19),
-                       (range( 950000, 1000001), 20),
-                       (range(1000000, 1050001), 21),
-                       (range(1050000, 1100001), 22),
-                       (range(1100000, 1150001), 23),
-                       (range(1150000, 1200001), 24),
-                       (range(1200000, 1250001), 25),
-                       (range(1250000, 1300001), 26),
-                       (range(1300000, 1350001), 27),
-                       (range(1350000, 1400001), 28),
-                       (range(1400000, 1450001), 29),
-                       (range(1450000, 1500001), 30),
-                       (range(1500000, 1550001), 31),
-                       (range(1550000, 1600001), 32)
+                       (X_name, range(     0,    50001),  1),
+                       (X_name, range(  50000,  100001),  2),
+                       (X_name, range( 100000,  150001),  3),
+                       (X_name, range( 150000,  200001),  4),
+                       (X_name, range( 200000,  250001),  5),
+                       (X_name, range( 250000,  300001),  6),
+                       (X_name, range( 300000,  350001),  7),
+                       (X_name, range( 350000,  400001),  8),
+                       (X_name, range( 400000,  450001),  9),
+                       (X_name, range( 450000,  500001), 10),
+                       (X_name, range( 500000,  550001), 11),
+                       (X_name, range( 550000,  600001), 12),
+                       (X_name, range( 600000,  650001), 13),
+                       (X_name, range( 650000,  700001), 14),
+                       (X_name, range( 700000,  750001), 15),
+                       (X_name, range( 750000,  800001), 16),
+                       (X_name, range( 800000,  850001), 17),
+                       (X_name, range( 850000,  900001), 18),
+                       (X_name, range( 900000,  950001), 19),
+                       (X_name, range( 950000, 1000001), 20),
+                       (X_name, range(1000000, 1050001), 21),
+                       (X_name, range(1050000, 1100001), 22),
+                       (X_name, range(1100000, 1150001), 23),
+                       (X_name, range(1150000, 1200001), 24)
                       ]
         
-        results = [executor.submit(clean_training_data, p) for p in params_list]
+        results = [executor.submit(clean_data, p) for p in params_list]
 
         # get results with the as_completed function, which gives us an iterator 
         # we loop over to yield results of our processes as they're completed
@@ -181,6 +184,7 @@ def run_processes():
 if __name__ == '__main__':
 
     start = time.perf_counter()
-    run_processes()
+    X_name = sys.argv[1]
+    main(X_name)
     finish = time.perf_counter()
     print(f'Finished in {round(finish-start, 2)} second(s)')
