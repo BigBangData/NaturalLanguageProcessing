@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import time
+
 import string
 import urlextract
 import pandas as pd
@@ -119,8 +120,8 @@ def clean_data(params):
     load_dir = os.path.join("..","data","1_raw","sentiment140", X_name)
     
     df = load_subset(filepath=load_dir,
-                     col_ix=[1,2,3], 
-                     col_names=['username','text','index'], 
+                     col_ix=[1,2], 
+                     col_names=['username','text'], 
                      ix_list=ix_list)
 
     # cleanup text
@@ -152,25 +153,25 @@ def main(X_name):
                        (X_name, range( 100000,  150001),  3),
                        (X_name, range( 150000,  200001),  4),
                        (X_name, range( 200000,  250001),  5),
-                       (X_name, range( 250000,  300001),  6)
-                       #(X_name, range( 300000,  350001),  7),
-                       #(X_name, range( 350000,  400001),  8),
-                       #(X_name, range( 400000,  450001),  9),
-                       #(X_name, range( 450000,  500001), 10),
-                       #(X_name, range( 500000,  550001), 11),
-                       #(X_name, range( 550000,  600001), 12),
-                       #(X_name, range( 600000,  650001), 13),
-                       #(X_name, range( 650000,  700001), 14),
-                       #(X_name, range( 700000,  750001), 15),
-                       #(X_name, range( 750000,  800001), 16),
-                       #(X_name, range( 800000,  850001), 17),
-                       #(X_name, range( 850000,  900001), 18),
-                       #(X_name, range( 900000,  950001), 19),
-                       #(X_name, range( 950000, 1000001), 20),
-                       #(X_name, range(1000000, 1050001), 21),
-                       #(X_name, range(1050000, 1100001), 22),
-                       #(X_name, range(1100000, 1150001), 23),
-                       #(X_name, range(1150000, 1200001), 24)
+                       (X_name, range( 250000,  300001),  6),
+                       (X_name, range( 300000,  350001),  7),
+                       (X_name, range( 350000,  400001),  8),
+                       (X_name, range( 400000,  450001),  9),
+                       (X_name, range( 450000,  500001), 10),
+                       (X_name, range( 500000,  550001), 11),
+                       (X_name, range( 550000,  600001), 12),
+                       (X_name, range( 600000,  650001), 13),
+                       (X_name, range( 650000,  700001), 14),
+                       (X_name, range( 700000,  750001), 15),
+                       (X_name, range( 750000,  800001), 16),
+                       (X_name, range( 800000,  850001), 17),
+                       (X_name, range( 850000,  900001), 18),
+                       (X_name, range( 900000,  950001), 19),
+                       (X_name, range( 950000, 1000001), 20),
+                       (X_name, range(1000000, 1050001), 21),
+                       (X_name, range(1050000, 1100001), 22),
+                       (X_name, range(1100000, 1150001), 23),
+                       (X_name, range(1150000, 1200001), 24)
                       ]
         
         results = [executor.submit(clean_data, p) for p in params_list]
@@ -183,8 +184,15 @@ def main(X_name):
 
 if __name__ == '__main__':
 
-    start = time.perf_counter()
+    start_time = time.time()
+    
+    # X_name should be 1st arg
+    # TODO: error check
     X_name = sys.argv[1]
+    
+    # run main func
     main(X_name)
-    finish = time.perf_counter()
-    print(f'Finished in {round(finish-start, 2)} second(s)')
+    
+    # print out running time
+    mins, secs = divmod(time.time() - start_time, 60)
+    print(f"Elapsed time: {mins:0.0f} minute(s) and {secs:0.0f} second(s).")

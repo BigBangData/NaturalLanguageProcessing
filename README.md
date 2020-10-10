@@ -10,15 +10,12 @@ FINAL TODO:
    
 NOW TODO:
 
-    - beware of diffs; copy changes to/from sentiment140 and twitterbot
-	
+    - beware of diffs; copy changes to/from sentiment140 and twitterbot (std funcs)
+
     - Restructured entire project: follow IntroToTextAnalytics workflow
-	
+
     - split train/test data while raw - done 
     - then cleanup - ongoing (see sentiment140 cleanup JN)
     - then pre-process
     - careful with IDF calculation (cache IDF)
     - calculate SVD
-    - etc. 
-    - standardize functions across sentiment140 and twitterbot
-    - purpose could be study of data drift
