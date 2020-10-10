@@ -119,8 +119,8 @@ def clean_data(params):
     load_dir = os.path.join("..","data","1_raw","sentiment140", X_name)
     
     df = load_subset(filepath=load_dir,
-                     col_ix=[2,3], 
-                     col_names=['username','text'], 
+                     col_ix=[1,2,3], 
+                     col_names=['username','text','index'], 
                      ix_list=ix_list)
 
     # cleanup text
@@ -137,7 +137,7 @@ def clean_data(params):
         os.mkdir(save_dir)
 
     filename = "".join(["train_", str(num), ".csv"])
-    df.to_csv(os.path.join(save_dir, filename), index=True)
+    df.to_csv(os.path.join(save_dir, filename), index=False)
     
     # print out results
     result=''.join(["Saving cleaned up train dataset: ", str(num)])
@@ -152,25 +152,25 @@ def main(X_name):
                        (X_name, range( 100000,  150001),  3),
                        (X_name, range( 150000,  200001),  4),
                        (X_name, range( 200000,  250001),  5),
-                       (X_name, range( 250000,  300001),  6),
-                       (X_name, range( 300000,  350001),  7),
-                       (X_name, range( 350000,  400001),  8),
-                       (X_name, range( 400000,  450001),  9),
-                       (X_name, range( 450000,  500001), 10),
-                       (X_name, range( 500000,  550001), 11),
-                       (X_name, range( 550000,  600001), 12),
-                       (X_name, range( 600000,  650001), 13),
-                       (X_name, range( 650000,  700001), 14),
-                       (X_name, range( 700000,  750001), 15),
-                       (X_name, range( 750000,  800001), 16),
-                       (X_name, range( 800000,  850001), 17),
-                       (X_name, range( 850000,  900001), 18),
-                       (X_name, range( 900000,  950001), 19),
-                       (X_name, range( 950000, 1000001), 20),
-                       (X_name, range(1000000, 1050001), 21),
-                       (X_name, range(1050000, 1100001), 22),
-                       (X_name, range(1100000, 1150001), 23),
-                       (X_name, range(1150000, 1200001), 24)
+                       (X_name, range( 250000,  300001),  6)
+                       #(X_name, range( 300000,  350001),  7),
+                       #(X_name, range( 350000,  400001),  8),
+                       #(X_name, range( 400000,  450001),  9),
+                       #(X_name, range( 450000,  500001), 10),
+                       #(X_name, range( 500000,  550001), 11),
+                       #(X_name, range( 550000,  600001), 12),
+                       #(X_name, range( 600000,  650001), 13),
+                       #(X_name, range( 650000,  700001), 14),
+                       #(X_name, range( 700000,  750001), 15),
+                       #(X_name, range( 750000,  800001), 16),
+                       #(X_name, range( 800000,  850001), 17),
+                       #(X_name, range( 850000,  900001), 18),
+                       #(X_name, range( 900000,  950001), 19),
+                       #(X_name, range( 950000, 1000001), 20),
+                       #(X_name, range(1000000, 1050001), 21),
+                       #(X_name, range(1050000, 1100001), 22),
+                       #(X_name, range(1100000, 1150001), 23),
+                       #(X_name, range(1150000, 1200001), 24)
                       ]
         
         results = [executor.submit(clean_data, p) for p in params_list]
