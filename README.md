@@ -14,6 +14,10 @@ NOW TODO:
 
     - Restructured entire project: follow IntroToTextAnalytics workflow
 
+    - FEATURE ENGINEERING IDEAS:
+        - count punctuations, count ascii text, count USERNAME, count EMOJI
+        - tweet starts with USERNAME
+        - actual semantic stuff like count of "bad words" and count of "positive words"
     - split train/test data while raw - done 
     - then cleanup - ongoing (see sentiment140 cleanup JN)
     - then pre-process
