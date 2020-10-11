@@ -4,6 +4,7 @@ import re
 import sys
 import time
 
+import emoji
 import string
 import urlextract
 import pandas as pd
@@ -43,12 +44,12 @@ def clean_data(params):
         """Cleans up a tweet's text with the following steps:
             1. make lower case
             2. anonymize usernames
-            3. remove URLs
+            3. replace URLs
             4. unescape HTML entities
             5. remove extraneous characters
             6. remove punctuation
-            7. remove emojis
-            8. discard non-ascii decodable text after utf-8 encoding
+            7. replace emojis
+            8. replace non-ascii decodable text (after utf-8 encoding)
             9. tokenize
             10. filter stop words from tokens
             11. lemmatize filtered tokens
@@ -62,14 +63,14 @@ def clean_data(params):
         # lower case
         tweet = tweet.lower()
         
-        # anonymize usernames
-        tweet = re.sub(r'@([^\s]+)','USERNAME', tweet) 
+        # anonymize usernames (replace with 'USERNAME')
+        tweet = re.sub(r'@([^\s]+)','USERNAME', tweet)
         
-        # remove URLs
+        # replace URLs with 'URL'
         urls = list(set(url_extractor.find_urls(tweet)))
         if len(urls) > 0:
             for url in urls:
-                tweet = tweet.replace(url, "")
+                tweet = tweet.replace(url, 'URL')
                 
         # unescape HTML
         tweet = unescape(tweet)
@@ -80,13 +81,19 @@ def clean_data(params):
                     |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
         tweet = re.sub(pattern,'', tweet)
         
-        # remove punctuation
+        # remove punctuations
+        # (will count them later as part of feature engineering)
         tweet = tweet.translate(str.maketrans('', '', string.punctuation))
+       
+        # return text representations of emojis then replace them with 'EMOJI'
+        # using emojis to label pos/neg tweets so cannot use those as predictors
+        #tweet = emoji.demojize(tweet)
+        #tweet = re.sub(r'(:[^:]*:)', ' EMOJI ', tweet)
         
-        # remove emojis
-        tweet = re.sub(r'[^\x00-\x7F]+', '', tweet).strip()
+        # better version still...
+        tweet = re.sub(r'[^\x00-\x7F]+', ' EMOJI ', tweet)
         
-        # discard non-ascii decodable text
+        # replace non-ascii decodable text with 'NONASCII'
         def is_ascii(text):
             try:
                 text.encode(encoding='utf-8').decode('ascii')
@@ -96,7 +103,7 @@ def clean_data(params):
                 return True
 
         if is_ascii(tweet) == False:
-            return " "
+            return ' NONASCII '
         else:
             pass
 
@@ -115,10 +122,10 @@ def clean_data(params):
         
         # lemmatize
         word_lem = WordNetLemmatizer()
-        filtered_lemmatized_tokens = [word_lem.lemmatize(token) \
-                                      for token in filtered_tokens]
+        lemmatized_tokens = [word_lem.lemmatize(token) \
+                             for token in filtered_tokens]
         
-        return " ".join(filtered_lemmatized_tokens)
+        return " ".join(lemmatized_tokens)
 
     def vector_clean(list_):
         map_iterator = map(cleanup_tweet, list_)
@@ -131,9 +138,11 @@ def clean_data(params):
     url_extractor = urlextract.URLExtract()
     
     # load data
-    load_dir = os.path.join("..","data","1_raw","sentiment140", X_name)
+    load_dir = os.path.join("..","data","1_raw","sentiment140")
+    filename = ''.join([X_name, ".csv"])
+    filepath = os.path.join(load_dir, filename)
     
-    df = load_subset(filepath=load_dir,
+    df = load_subset(filepath=filepath,
                      col_ix=[1,2], 
                      col_names=['username','text'], 
                      ix_list=ix_list)
@@ -148,7 +157,7 @@ def clean_data(params):
     except:
         os.mkdir(save_dir)
 
-    filename = "".join([X_name.split('.')[0], '.', str(num), ".csv"])
+    filename = "".join([X_name, '.', str(num), ".csv"])
     df.to_csv(os.path.join(save_dir, filename), index=False)
     
     # print out results
@@ -157,7 +166,7 @@ def clean_data(params):
 
 def main(X_name):
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        if X_name == 'X_train.csv':
+        if X_name == 'X_train':
             params_list = [
                            (X_name, range(     0,    50001),  1),
                            (X_name, range(  50000,  100001),  2),
@@ -184,7 +193,7 @@ def main(X_name):
                            (X_name, range(1100000, 1150001), 23),
                            (X_name, range(1150000, 1200001), 24)
                           ]
-        if X_name == 'X_test.csv':
+        if X_name == 'X_test':
             params_list = [
                            (X_name, range(     0,    50001),  1),
                            (X_name, range(  50000,  100001),  2),
@@ -217,4 +226,4 @@ if __name__ == '__main__':
     
     # print out running time
     mins, secs = divmod(time.time() - start_time, 60)
-    print(f"Elapsed time: {mins:0.0f} minute(s) and {secs:0.0f} second(s).")
+    print(f"Cleanup time: {mins:0.0f} minute(s) and {secs:0.0f} second(s).")
