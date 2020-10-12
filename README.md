@@ -1,6 +1,5 @@
 Twitter Sentiment Analysis
-======================
-
+===
 
 FINAL TODO: 
     
@@ -15,11 +14,12 @@ NOW TODO:
     - Restructured entire project: follow IntroToTextAnalytics workflow
 
     - FEATURE ENGINEERING IDEAS:
-        - count punctuations, count ascii text, count USERNAME, count EMOJI
-        - tweet starts with USERNAME
-        - actual semantic stuff like count of "bad words" and count of "positive words"
-    - split train/test data while raw - done 
-    - then cleanup - ongoing (see sentiment140 cleanup JN)
-    - then pre-process
-    - careful with IDF calculation (cache IDF)
-    - calculate SVD
+        - count of: punctuations, ascii chars, USERNAMEs, EMOJIs, URLs
+        - tweet starts with USERNAME, or EMOJI, or URL, etc.
+        - semantic analysis?
+			- count of swear words, or negative words, or positive words, etc. (need lists)
+    - split train/test data while raw: done 
+    - cleanup: done (maybe better EDA)
+    - pre-process: ongoing
+		- careful with IDF calculation (cache IDF)
+		- Latent Semantic Analyss + SVD...
