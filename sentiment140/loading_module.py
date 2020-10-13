@@ -2,7 +2,7 @@
 import os
 import sys
 import time
-
+import numpy as np
 import pandas as pd
 import concurrent.futures as cf
 
@@ -65,7 +65,30 @@ def load_clean_data(X_name):
         subset_list = []
         for f in cf.as_completed(results):
             subset_list.append(f.result())
+        
+        # concatenate subsets    
+        X = pd.concat(subset_list)
 
-        df = pd.concat(subset_list)
-        df = df.sort_index()
-        return df
+        raw_dir = os.path.join("..","data","1_raw","sentiment140")
+        
+        if X_name == 'X_train':
+            # load original training indices
+            train_ix = np.load(os.path.join(raw_dir, "train_ix.npy"))
+            X.index = list(train_ix)
+        
+            # load y vector and reindex
+            y_filepath = os.path.join(raw_dir, "y_train.csv")
+            y = pd.read_csv(y_filepath)
+            y.index = list(train_ix)
+            
+        if X_name == 'X_text':
+            # load original text indices
+            test_ix = np.load(os.path.join(raw_dir, "test_ix.npy"))
+            X.index = list(test_ix)  
+            
+            # load y vector and reindex
+            y_filepath = os.path.join(raw_dir, "y_test.csv")
+            y = pd.read_csv(y_filepath)
+            y.index = list(test_ix)      
+  
+        return (X, y)
