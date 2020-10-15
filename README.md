@@ -11,15 +11,18 @@ NOW TODO:
 
     - beware of diffs; copy changes to/from sentiment140 and twitterbot (std funcs)
 
-    - Restructured entire project: follow IntroToTextAnalytics workflow
+    - Restructure project: follow IntroToTextAnalytics workflow
+		- split train/test data while raw: done 
+		- cleanup: done (maybe better EDA)
+		- pre-process: ongoing
+			- careful with IDF calculation (cache IDF)
+			- Latent Semantic Analyss + SVD...
+		
+	- Restructure project: create a POC first, of everything, then re-run with real data
 
     - FEATURE ENGINEERING IDEAS:
         - count of: punctuations, ascii chars, USERNAMEs, EMOJIs, URLs
         - tweet starts with USERNAME, or EMOJI, or URL, etc.
         - semantic analysis?
 			- count of swear words, or negative words, or positive words, etc. (need lists)
-    - split train/test data while raw: done 
-    - cleanup: done (maybe better EDA)
-    - pre-process: ongoing
-		- careful with IDF calculation (cache IDF)
-		- Latent Semantic Analyss + SVD...
+			

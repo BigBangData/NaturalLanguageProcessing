@@ -71,24 +71,28 @@ def load_clean_data(X_name):
 
         raw_dir = os.path.join("..","data","1_raw","sentiment140")
         
+        # update: do not use train_ix, cannot properly index to compare
+        #         with X_transformed, no need anyway (train_ix saved)
         if X_name == 'X_train':
             # load original training indices
-            train_ix = np.load(os.path.join(raw_dir, "train_ix.npy"))
-            X.index = list(train_ix)
+            #train_ix = np.load(os.path.join(raw_dir, "train_ix.npy"))
+            #X.index = list(train_ix)
+            X.index = range(len(X))
         
             # load y vector and reindex
             y_filepath = os.path.join(raw_dir, "y_train.csv")
             y = pd.read_csv(y_filepath)
-            y.index = list(train_ix)
+            #y.index = list(train_ix)
             
         if X_name == 'X_text':
             # load original text indices
-            test_ix = np.load(os.path.join(raw_dir, "test_ix.npy"))
-            X.index = list(test_ix)  
+            #test_ix = np.load(os.path.join(raw_dir, "test_ix.npy"))
+            #X.index = list(test_ix)
+            X.index = range(len(X))
             
             # load y vector and reindex
             y_filepath = os.path.join(raw_dir, "y_test.csv")
             y = pd.read_csv(y_filepath)
-            y.index = list(test_ix)      
+            #y.index = list(test_ix)      
   
         return (X, y)
