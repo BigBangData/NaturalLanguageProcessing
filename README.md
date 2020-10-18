@@ -1,28 +1,16 @@
 Twitter Sentiment Analysis
 ===
 
-FINAL TODO: 
+TODO: 
     
     - README.md should be the presentation
-    - Organize projects: too many goals (Sentiment Analysis, test QWERTY Effect, TF-IDF guide)
-    - Main purpose could be study of data drift, sentiment140 vs new 1.6M Tweets from twitterbot
-   
-NOW TODO:
+    - Finish Sentiment Analysis Project with sentiment140 data 
+	- Rerun project with new Twitter data (twitterbot projecct)
+    - Interesting analysis could be study of data drift
+	
+PITFALLS:
 
-    - beware of diffs; copy changes to/from sentiment140 and twitterbot (std funcs)
-
-    - Restructure project: follow IntroToTextAnalytics workflow
-		- split train/test data while raw: done 
-		- cleanup: done (maybe better EDA)
-		- pre-process: ongoing
-			- careful with IDF calculation (cache IDF)
-			- Latent Semantic Analyss + SVD...
-		
-	- Restructure project: create a POC first, of everything, then re-run with real data
-
-    - FEATURE ENGINEERING IDEAS:
-        - count of: punctuations, ascii chars, USERNAMEs, EMOJIs, URLs
-        - tweet starts with USERNAME, or EMOJI, or URL, etc.
-        - semantic analysis?
-			- count of swear words, or negative words, or positive words, etc. (need lists)
-			
+    - Beware of different dev envs, copy changes to/from sentiment140 and twitterbot
+	
+    - follow IntroToTextAnalytics workflow (careful, cache IDF)
+	- explain EDA better (presentation?)
