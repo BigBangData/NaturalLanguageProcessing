@@ -1,0 +1,15 @@
+10-18 19:12 root         INFO     Date: 2020-10-18
+10-18 19:12 root         INFO     Time: 19:12:26
+10-18 19:12 root         INFO     Tweet deduplication
+10-18 19:12 root         INFO     Loading...
+10-18 19:12 load         INFO     Loading time: 20.3579 secs.
+10-18 19:12 load         INFO     Raw data nrows: 1415400
+10-18 19:12 dedup        INFO     Deduping...
+10-18 19:12 dedup        INFO     Dedupe time: 1.3723 secs.
+10-18 19:12 dedup        INFO     Deduped data nrows: 1038850
+10-18 19:12 dedup        INFO     % dupes: 26.6
+10-18 19:12 dedup        INFO     % diff in target (Polarity): 5.9799999999999995
+10-18 19:12 save         INFO     Saving...
+10-18 19:13 root         INFO     Deduplication successful.
+10-18 19:13 root         INFO     See ..\data\1.2_deduped\tweets\20201018_deduped_tweets.csv for data.
+10-18 19:13 root         INFO     Time elapsed: 35.8665 secs.
