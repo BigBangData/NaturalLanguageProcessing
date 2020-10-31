@@ -70,15 +70,13 @@ preprocess_pipeline = Pipeline([
 
 X_train_transformed = preprocess_pipeline.fit_transform(X_train)
 
-
-# accuracy?
+# accuracy (default)
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 
 log_clf = LogisticRegression(solver="liblinear", random_state=42)
 score = cross_val_score(log_clf, X_train_transformed, y_train, cv=3, verbose=3)
 score.mean()
-
 
 # precision and recall 
 from sklearn.metrics import precision_score, recall_score
@@ -88,6 +86,5 @@ log_clf = LogisticRegression(solver="liblinear", random_state=42)
 log_clf.fit(X_train_transformed, y_train)
 
 y_pred = log_clf.predict(X_test_transformed)
-
 print("Precision: {:.2f}%".format(100 * precision_score(y_test, y_pred)))
 print("Recall: {:.2f}%".format(100 * recall_score(y_test, y_pred)))
