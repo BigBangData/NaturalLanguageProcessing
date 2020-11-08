@@ -115,8 +115,6 @@ class DocumentToWordCounterTransformer(BaseEstimator, TransformerMixin):
                         word_counts.pop(word)
                     except KeyError:
                         continue
-            if self.expand_contractions:
-                    leftovers = ['t','s','d','m','ve','re','ll','']
             if self.lemmatization and lemmatizer is not None:
                 lemmatized_word_counts = Counter()
                 for word, count in word_counts.items():
