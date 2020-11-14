@@ -133,7 +133,8 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
                  remove_junk=True, remove_punctuation=True, 
                  replace_emojis=True, replace_nonascii=True, 
                  remove_stopwords=True, lemmatization=True,
-                 bigrams=True):
+                 n_grams=2 # defaults to bigrams
+                ): 
         self.expand_contractions = expand_contractions
         self.lower_case = lower_case
         self.replace_usernames = replace_usernames
@@ -146,7 +147,7 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
         self.replace_nonascii = replace_nonascii
         self.remove_stopwords = remove_stopwords
         self.lemmatization = lemmatization
-        self.bigrams = bigrams
+        self.n_grams = n_grams
     def fit(self, X, y=None):
         return self
     def transform(self, X, y=None):
@@ -188,10 +189,11 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
                 tokens = [t for t in tokens if t not in stop_words]
             if self.lemmatization and lemmatizer is not None:
                 unigrams = [lemmatizer.lemmatize(t) for t in tokens]
-            if self.bigrams:
-                bigrams = ngrams(word_tokenize(doc), 2)
-                bigrams = ['_'.join(grams) for grams in bigrams]
-                tokens = [*tokens, *bigrams]       
+            if self.n_grams:
+                for i in range(self.n_grams+1):
+                    grams = ngrams(word_tokenize(doc), i)
+                    grams = ['_'.join(gram) for gram in grams]
+                    tokens = [*tokens, *grams]
             # include counts
             tokens_counts = Counter(tokens)
             # append to list
