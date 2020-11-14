@@ -126,15 +126,14 @@ class DocumentToWordCounterTransformer(BaseEstimator, TransformerMixin):
         return np.array(X_transformed)
     
     
-class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
+class DocumentToBigramCounterTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, expand_contractions=True, lower_case=True, 
                  replace_usernames=True, unescape_html=True, 
                  replace_urls=True, replace_numbers=True, 
                  remove_junk=True, remove_punctuation=True, 
                  replace_emojis=True, replace_nonascii=True, 
                  remove_stopwords=True, lemmatization=True,
-                 n_grams=2 # defaults to bigrams
-                ): 
+                 bigrams=True):
         self.expand_contractions = expand_contractions
         self.lower_case = lower_case
         self.replace_usernames = replace_usernames
@@ -147,7 +146,7 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
         self.replace_nonascii = replace_nonascii
         self.remove_stopwords = remove_stopwords
         self.lemmatization = lemmatization
-        self.n_grams = n_grams
+        self.bigrams = bigrams
     def fit(self, X, y=None):
         return self
     def transform(self, X, y=None):
@@ -188,12 +187,11 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
                               'to','was','were','will','with']
                 tokens = [t for t in tokens if t not in stop_words]
             if self.lemmatization and lemmatizer is not None:
-                unigrams = [lemmatizer.lemmatize(t) for t in tokens]
-            if self.n_grams:
-                for i in range(self.n_grams+1):
-                    grams = ngrams(word_tokenize(doc), i)
-                    grams = ['_'.join(gram) for gram in grams]
-                    tokens = [*tokens, *grams]
+                tokens = [lemmatizer.lemmatize(t) for t in tokens]
+            if self.bigrams:
+                bigrams = ngrams(word_tokenize(doc), 2)
+                bigrams = ['_'.join(grams) for grams in bigrams]
+                tokens = [*tokens, *bigrams]
             # include counts
             tokens_counts = Counter(tokens)
             # append to list
