@@ -198,6 +198,81 @@ class DocumentToBigramCounterTransformer(BaseEstimator, TransformerMixin):
             X_transformed.append(tokens_counts)
         return np.array(X_transformed)
     
+
+class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, expand_contractions=True, lower_case=True, 
+                 replace_usernames=True, unescape_html=True, 
+                 replace_urls=True, replace_numbers=True, 
+                 remove_junk=True, remove_punctuation=True, 
+                 replace_emojis=True, replace_nonascii=True, 
+                 remove_stopwords=True, lemmatization=True,
+                 n_grams=2 # defaults to bigram
+                ): 
+        self.expand_contractions = expand_contractions
+        self.lower_case = lower_case
+        self.replace_usernames = replace_usernames
+        self.unescape_html = unescape_html
+        self.replace_urls = replace_urls
+        self.replace_numbers = replace_numbers
+        self.remove_junk = remove_junk
+        self.remove_punctuation = remove_punctuation
+        self.replace_emojis = replace_emojis
+        self.replace_nonascii = replace_nonascii
+        self.remove_stopwords = remove_stopwords
+        self.lemmatization = lemmatization
+        self.n_grams = n_grams
+    def fit(self, X, y=None):
+        return self
+    def transform(self, X, y=None):
+        X_transformed = []
+        for doc in X:
+            if self.lower_case:
+                doc = doc.lower()
+            if self.expand_contractions and contractions_map is not None:
+                doc = expand_contractions(doc, contractions_map)
+            if self.replace_usernames:
+                doc = re.sub(r'^@([^\s]+)',' USERNAME ', doc)
+            if self.unescape_html:
+                doc = unescape(doc)
+            if self.replace_urls and url_extractor is not None:
+                urls = list(set(url_extractor.find_urls(doc)))
+                urls.sort(key=lambda url: len(url), reverse=True)
+                for url in urls:
+                    doc = doc.replace(url, ' URL ')
+            if self.replace_numbers:
+                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUMBER ', doc)
+            if self.remove_junk:
+                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿|\x82\
+                            |\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
+                            |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
+                doc = re.sub(pattern,'', doc)
+            if self.remove_punctuation:
+                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
+            if self.replace_emojis:
+                doc = re.sub(r'[^\x00-\x7F]+', ' EMOJI ', doc)
+            if self.replace_nonascii:
+                if is_ascii(doc) == False:
+                    doc = ' NONASCII '
+            # tokenize
+            tokens = doc.split()
+            if self.remove_stopwords:
+                stop_words = ['a','an','and','are','as','at','be','by','for','from',
+                              'has','he','in','is','it','its','of','on','that','the',
+                              'to','was','were','will','with']
+                tokens = [t for t in tokens if t not in stop_words]
+            if self.lemmatization and lemmatizer is not None:
+                tokens = [lemmatizer.lemmatize(t) for t in tokens]
+            if self.n_grams:
+                for i in range(2, self.n_grams+1): # fix doubling of unigrams
+                    grams = ngrams(word_tokenize(doc), i)
+                    grams = ['_'.join(gram) for gram in grams]
+                    tokens = [*tokens, *grams]
+            # include counts
+            tokens_counts = Counter(tokens)
+            # append to list
+            X_transformed.append(tokens_counts)
+        return np.array(X_transformed)
+
     
 class WordCounterToVectorTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, vocabulary_size=1000):
