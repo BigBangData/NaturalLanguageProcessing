@@ -83,7 +83,7 @@ class DocumentToWordCounterTransformer(BaseEstimator, TransformerMixin):
             if self.expand_contractions and contractions_map is not None:
                 doc = expand_contractions(doc, contractions_map)
             if self.replace_usernames:
-                doc = re.sub(r'^@([^\s]+)',' USERNAME ', doc)
+                doc = re.sub(r'^@([^\s]+)',' USR ', doc)
             if self.unescape_html:
                 doc = unescape(doc)
             if self.replace_urls and url_extractor is not None:
@@ -92,14 +92,14 @@ class DocumentToWordCounterTransformer(BaseEstimator, TransformerMixin):
                 for url in urls:
                     doc = doc.replace(url, ' URL ')
             if self.replace_numbers:
-                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUMBER ', doc)
+                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUM ', doc)
+            if self.remove_punctuation:
+                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
             if self.remove_junk:
-                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿|\x82\
+                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\¿|\x82\
                             |\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
                             |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
                 doc = re.sub(pattern,'', doc)
-            if self.remove_punctuation:
-                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
             if self.replace_emojis:
                 doc = re.sub(r'[^\x00-\x7F]+', ' EMOJI ', doc)
             if self.replace_nonascii:
@@ -157,7 +157,7 @@ class DocumentToBigramCounterTransformer(BaseEstimator, TransformerMixin):
             if self.expand_contractions and contractions_map is not None:
                 doc = expand_contractions(doc, contractions_map)
             if self.replace_usernames:
-                doc = re.sub(r'^@([^\s]+)',' USERNAME ', doc)
+                doc = re.sub(r'^@([^\s]+)',' USR ', doc)
             if self.unescape_html:
                 doc = unescape(doc)
             if self.replace_urls and url_extractor is not None:
@@ -166,14 +166,14 @@ class DocumentToBigramCounterTransformer(BaseEstimator, TransformerMixin):
                 for url in urls:
                     doc = doc.replace(url, ' URL ')
             if self.replace_numbers:
-                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUMBER ', doc)
+                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUM ', doc)
+            if self.remove_punctuation:
+                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
             if self.remove_junk:
-                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿|\x82\
+                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\¿|\x82\
                             |\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
                             |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
                 doc = re.sub(pattern,'', doc)
-            if self.remove_punctuation:
-                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
             if self.replace_emojis:
                 doc = re.sub(r'[^\x00-\x7F]+', ' EMOJI ', doc)
             if self.replace_nonascii:
@@ -231,7 +231,7 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
             if self.expand_contractions and contractions_map is not None:
                 doc = expand_contractions(doc, contractions_map)
             if self.replace_usernames:
-                doc = re.sub(r'^@([^\s]+)',' USERNAME ', doc)
+                doc = re.sub(r'^@([^\s]+)',' USR ', doc)
             if self.unescape_html:
                 doc = unescape(doc)
             if self.replace_urls and url_extractor is not None:
@@ -240,14 +240,14 @@ class DocumentToNgramCounterTransformer(BaseEstimator, TransformerMixin):
                 for url in urls:
                     doc = doc.replace(url, ' URL ')
             if self.replace_numbers:
-                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUMBER ', doc)
+                doc = re.sub(r'\d+(?:\.\d*(?:[eE]\d+))?', ' NUM ', doc)
+            if self.remove_punctuation:
+                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
             if self.remove_junk:
-                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\!|\?|\¿|\x82\
+                pattern = r'\¥|\â|\«|\»|\Ñ|\Ð|\¼|\½|\¾|\¿|\x82\
                             |\x83|\x84|\x85|\x86|\x87|\x88|\x89|\
                             |\x8a|\x8b|\x8c|\x8d|\x8e|\°|\µ|\´|\º|\¹|\³'
                 doc = re.sub(pattern,'', doc)
-            if self.remove_punctuation:
-                doc = re.sub(r'\W+', ' ', doc, flags=re.M)
             if self.replace_emojis:
                 doc = re.sub(r'[^\x00-\x7F]+', ' EMOJI ', doc)
             if self.replace_nonascii:
