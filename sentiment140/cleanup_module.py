@@ -53,7 +53,7 @@ url_extractor = urlextract.URLExtract()
 lemmatizer = WordNetLemmatizer()
 
 
-# classes          
+# classes
 class DocumentToWordCounterTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, expand_contractions=True, lower_case=True, 
                  replace_usernames=True, unescape_html=True, 
