@@ -1,4 +1,0 @@
-10-07 20:45 train.load   INFO     Loading subset 6, rows: 250001 - 3010-07110-07 20:45 train.clean  INFO     Cleaning subset 10-07 20:46 train.save   I10-07 20:47 root         INFO     Cleanup successful.
-10-07 20:47 root         INFO     See logs\20201007_cleanup_log
-10-07 20:47 root         INFO     See ..\data\2_clean\tweets for data.
-10-07 20:47 root         INFO     Time elapsed: 101.2448 secs.
