@@ -4,4 +4,3 @@ __pycache__/
 *$py.class
 *.ipynb_checkpoints/*
 TextAnalyticsWithR/.ipynb_checkpoints/*
-TextAnalyticsWithR/old/*
