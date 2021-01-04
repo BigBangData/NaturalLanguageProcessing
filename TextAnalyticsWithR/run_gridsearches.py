@@ -1,10 +1,13 @@
+#!/usr/bin/env python
 import os
 import re
 import time
 import joblib
+
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
+
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
 from sklearn.metrics import make_scorer, recall_score, accuracy_score, confusion_matrix
@@ -26,7 +29,7 @@ Xs = []
 for ix, X in enumerate(Xnames):
     path_ = os.path.join(proc_dir, Xnames[ix])
     Xs.append(sp.load_npz(path_))
-	
+
 def print_eval_metrics(y_val, y_pred):
     tn, fp, fn, tp = confusion_matrix(y_val, y_pred).ravel()
     acc = (tp + tn) / (tp + tn + fp + fn)
@@ -46,7 +49,7 @@ def gridsearch_wrapper(test=False, k=10):
     
     # instantiate list of dicts to gather results
     gridsearches = []
-    for ix, X_name in enumerate(Xnames[:3]):
+    for ix, X_name in enumerate(Xnames):
 
         X_ = Xs[ix].toarray()
         X_name = X_name.split('.')[0]
@@ -56,10 +59,10 @@ def gridsearch_wrapper(test=False, k=10):
 
         # setup testing param grid
         test_param_grid = {
-            'min_samples_split': [10, 15], 
-            'n_estimators' : [40, 80],
-            'max_depth': [3, 6],
-            'max_features': [40, 80]
+            'min_samples_split': [10, 20], 
+            'n_estimators' : [50, 100],
+            'max_depth': [5, 10],
+            'max_features': [50, 100]
         }
 
         # setup param grid for final not-too-deep search
@@ -67,7 +70,7 @@ def gridsearch_wrapper(test=False, k=10):
             'min_samples_split': [5, 10, 15], 
             'n_estimators' : [100, 200],
             'max_depth': [5, 10, 20],
-            'max_features': [50, 100, 250]
+            'max_features': [50, 100, 250, 500]
         }
 
         # setup scorers
@@ -125,6 +128,22 @@ def gridsearch_wrapper(test=False, k=10):
     return gridsearches
 
 if __name__=="__main__":
-	results = gridsearch_wrapper(test=True, k=3)
+ 
+    # uncomment for test or full run
+    results = gridsearch_wrapper(test=True, k=5)
+    #results = gridsearch_wrapper(test=False, k=10)
+    
+    # persist results
+    model_dir = os.path.join("data", "3_modeling")
+    
+    # change date and param type manually (i.e. 01042020_rf_gridsearches_fullparams.joblib)
+    file_path = os.path.join(model_dir, "01032020_rf_gridsearches_testparams.joblib")
+    joblib.dump(results, file_path)
 
-
+    
+    
+    
+    
+    
+    
+    
