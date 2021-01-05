@@ -130,14 +130,14 @@ def gridsearch_wrapper(test=False, k=10):
 if __name__=="__main__":
  
     # uncomment for test or full run
-    results = gridsearch_wrapper(test=True, k=5)
-    #results = gridsearch_wrapper(test=False, k=10)
+    #results = gridsearch_wrapper(test=True, k=5)
+    results = gridsearch_wrapper(test=False, k=10)
     
     # persist results
     model_dir = os.path.join("data", "3_modeling")
     
     # change date and param type manually (i.e. 01042020_rf_gridsearches_fullparams.joblib)
-    file_path = os.path.join(model_dir, "01032020_rf_gridsearches_testparams.joblib")
+    file_path = os.path.join(model_dir, "01042020_rf_gridsearches_fullparams.joblib")
     joblib.dump(results, file_path)
 
     
