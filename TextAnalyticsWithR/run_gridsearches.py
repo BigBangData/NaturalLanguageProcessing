@@ -13,23 +13,6 @@ from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKF
 from sklearn.metrics import make_scorer, recall_score, accuracy_score, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
 
-# load target
-raw_path = os.path.join("data","1_raw")
-filename = "y_train.csv"
-y = pd.read_csv(os.path.join(raw_path, filename))
-y = np.array(y.iloc[:,0].ravel())
-y[y=='ham'] = 0
-y[y=='spam'] = 1
-y = y.astype('int')
-
-# load 12 matrices
-proc_dir = os.path.join("data","2_processed")
-Xnames = [x for x in os.listdir(proc_dir) if re.search('.npz', x)]
-Xs = []
-for ix, X in enumerate(Xnames):
-    path_ = os.path.join(proc_dir, Xnames[ix])
-    Xs.append(sp.load_npz(path_))
-
 def print_eval_metrics(y_val, y_pred):
     tn, fp, fn, tp = confusion_matrix(y_val, y_pred).ravel()
     acc = (tp + tn) / (tp + tn + fp + fn)
@@ -39,13 +22,18 @@ def print_eval_metrics(y_val, y_pred):
     print(f'sensitivity: {tpr:0.4f}')
     print(f'specificity: {tnr:0.4f}')
 
-def gridsearch_wrapper(test=False, k=10):
+def gridsearch_wrapper(Xs, Xnames, test=False, k=10):
     """
-    Performs grid searches and collects them in a list
-    test: faster, shallower searches for testing
-    k: for k-fold CV 
+    Performs grid searches and collects them in a list.
+    Args:
+        Xs: the numeric matrices
+        Xnames: their names
+        test: faster, shallower searches for testing
+        k: the number of CV folds
     """
+    
     start_time = time.time()
+    model_dir = os.path.join("data", "3_modeling")
     
     # instantiate list of dicts to gather results
     gridsearches = []
@@ -59,15 +47,15 @@ def gridsearch_wrapper(test=False, k=10):
 
         # setup testing param grid
         test_param_grid = {
-            'min_samples_split': [10, 20], 
-            'n_estimators' : [50, 100],
-            'max_depth': [5, 10],
-            'max_features': [50, 100]
+            'min_samples_split': [10, 15], 
+            'n_estimators' : [50, 60],
+            'max_depth': [4, 6],
+            'max_features': [50, 60]
         }
 
         # setup param grid for final not-too-deep search
         param_grid = {
-            'min_samples_split': [5, 10, 15], 
+            'min_samples_split': [5, 10, 15],
             'n_estimators' : [100, 200],
             'max_depth': [5, 10, 20],
             'max_features': [50, 100, 250, 500]
@@ -117,10 +105,15 @@ def gridsearch_wrapper(test=False, k=10):
         print('Evaluation metrics:')
         print_eval_metrics(y_val, y_pred)
 
-        # gather results into a list of dicts
         data = {'representation':X_name,
                 'gridsearch_res':grid_search_clf}
         
+        # save gridsearch as it finishes
+        #filename = ''.join([str(ix+1), "_", X_name, "_rf_gridsearch.joblib"])
+        #file_path = os.path.join(model_dir, filename)                                                    
+        #joblib.dump(data, file_path)
+        
+        # gather results into a list of dicts
         gridsearches.append(data)
         
     mins, secs = divmod(time.time() - start_time, 60)
@@ -129,15 +122,34 @@ def gridsearch_wrapper(test=False, k=10):
 
 if __name__=="__main__":
  
+    # load target
+    raw_path = os.path.join("data","1_raw")
+    filename = "y_train.csv"
+    y = pd.read_csv(os.path.join(raw_path, filename))
+    y = np.array(y.iloc[:,0].ravel())
+    y[y=='ham'] = 0
+    y[y=='spam'] = 1
+    y = y.astype('int')
+
+    # load 12 matrices
+    proc_dir = os.path.join("data","2_processed")
+    Xnames = [x for x in os.listdir(proc_dir) if re.search('.npz', x)]
+    Xs = []
+    for ix, X in enumerate(Xnames):
+        path_ = os.path.join(proc_dir, Xnames[ix])
+        Xs.append(sp.load_npz(path_))
+
     # uncomment for test or full run
-    #results = gridsearch_wrapper(test=True, k=5)
-    results = gridsearch_wrapper(test=False, k=10)
+    #results = gridsearch_wrapper(Xs[1:2], Xnames[1:2], test=True, k=3)
+    
+    # testing X_bot only
+    results = gridsearch_wrapper(Xs=Xs[0:1], Xnames=Xnames[0:1], test=False, k=10)
     
     # persist results
     model_dir = os.path.join("data", "3_modeling")
     
-    # change date and param type manually (i.e. 01042020_rf_gridsearches_fullparams.joblib)
-    file_path = os.path.join(model_dir, "01042020_rf_gridsearches_fullparams.joblib")
+    # change date manually
+    file_path = os.path.join(model_dir, "01062020_rf_gridsearches_3.joblib")
     joblib.dump(results, file_path)
 
     
