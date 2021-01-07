@@ -69,7 +69,7 @@ def gridsearch_wrapper(Xs, Xnames, test=False, k=10):
         }
 
         # instantiate estimator
-        clf = RandomForestClassifier(n_jobs=-1, random_state=42)
+        clf = RandomForestClassifier(n_jobs=4, random_state=42)
 
         # instantiate k-fold gridsearch
         cv_folds = StratifiedKFold(n_splits=k)
@@ -83,7 +83,7 @@ def gridsearch_wrapper(Xs, Xnames, test=False, k=10):
             grid_search_clf = GridSearchCV(clf, param_grid,
                                            scoring=scorers, 
                                            refit='tpr', cv=cv_folds, 
-                                           return_train_score=True, n_jobs=-1)           
+                                           return_train_score=True, n_jobs=4)           
 
         # train models
         print(f'\nTraining {ix+1}: {X_name}...')
@@ -123,7 +123,7 @@ def gridsearch_wrapper(Xs, Xnames, test=False, k=10):
 if __name__=="__main__":
  
     # load target
-    raw_path = os.path.join("data","1_raw")
+    raw_path = os.path.join("..", "data", "1_raw")
     filename = "y_train.csv"
     y = pd.read_csv(os.path.join(raw_path, filename))
     y = np.array(y.iloc[:,0].ravel())
@@ -132,7 +132,7 @@ if __name__=="__main__":
     y = y.astype('int')
 
     # load 12 matrices
-    proc_dir = os.path.join("data","2_processed")
+    proc_dir = os.path.join("..", "data", "2_processed")
     Xnames = [x for x in os.listdir(proc_dir) if re.search('.npz', x)]
     Xs = []
     for ix, X in enumerate(Xnames):
@@ -142,14 +142,14 @@ if __name__=="__main__":
     # uncomment for test or full run
     #results = gridsearch_wrapper(Xs[1:2], Xnames[1:2], test=True, k=3)
     
-    # testing X_bot only
+    # testing full grid with X_bot only
     results = gridsearch_wrapper(Xs=Xs[0:1], Xnames=Xnames[0:1], test=False, k=10)
     
     # persist results
-    model_dir = os.path.join("data", "3_modeling")
+    model_dir = os.path.join("..", "data", "3_modeling")
     
     # change date manually
-    file_path = os.path.join(model_dir, "01062020_rf_gridsearches_3.joblib")
+    file_path = os.path.join(model_dir, "01062021_rf_gridsearches_3.joblib")
     joblib.dump(results, file_path)
 
     
