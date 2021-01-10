@@ -6,7 +6,7 @@ This is a repo for collecting projects that involve NLP. Each finished project w
 
 - **TextAnalyticsWithR**: 
 
-This project emulates and builds upon the Data Science Dojo's [Introduction To Text Analytics With R](https://github.com/BigBangData/IntroToTextAnalyticsWithR) tutorials using Python. 
+This project emulates and builds upon the Data Science Dojo's [Introduction To Text Analytics With R](https://github.com/BigBangData/IntroToTextAnalyticsWithR) tutorials, but using Python instead.
 
 The finished project will not be a step-by-step tutorial - there are plenty of those online. Rather, it will be a framework for binary classification with open text format that can be repurposed for different NLP goals. In this case, an SMS spam detector.
 
