@@ -1,9 +1,10 @@
 # Byte-compiled / optimized / DLL files
 venv/		# Exclude virtual environment
-__pycache__/	# Exclude the whole folder
+/__pycache__/	# Exclude the whole folder
 *.py[cod]	# Will match .pyc, .pyo and .pyd files 
 *$py.class
 *.ipynb_checkpoints/*
 TextAnalyticsWithR/.ipynb_checkpoints/*
 TextAnalyticsWithR/old/.ipynb_checkpoints/*
-
+TextAnalyticsWithR/__pycache__/
+TextAnalyticsWithR/custom/__pycache__/
