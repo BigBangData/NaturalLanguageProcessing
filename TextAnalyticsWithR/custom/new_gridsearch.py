@@ -17,7 +17,7 @@ def print_eval_metrics(y_val, y_pred):
     print(f'sensitivity: {tpr:0.4f}')
     print(f'specificity: {tnr:0.4f}')
     
-def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10):
+def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10, n_jobs=6):
     """
     Performs grid searches and collects them in a list.
     Args:
@@ -25,6 +25,7 @@ def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10):
         Xnames: their names
         y: the target
         k: the number of CV folds
+        n_jobs: the number of logical cores
     """
     start_time = time.time()
     
@@ -46,7 +47,7 @@ def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10):
         }
 
         # instantiate estimator
-        clf = RandomForestClassifier(n_jobs=-1, random_state=42)
+        clf = RandomForestClassifier(n_jobs=n_jobs, random_state=42)
 
         # instantiate k-fold gridsearch
         cv_folds = StratifiedKFold(n_splits=k)
@@ -57,7 +58,7 @@ def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10):
                                        refit='tpr', 
                                        cv=cv_folds, 
                                        return_train_score=True, 
-                                       n_jobs=-1)
+                                       n_jobs=n_jobs)
         
         # train models
         print(f'\nTraining {ix+1}: {X_name}...')
