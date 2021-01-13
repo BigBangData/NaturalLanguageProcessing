@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-venv/		# Exclude virtual environment
+venv/		# Exclude virtual environment (if any, using conda env)
 /__pycache__/	# Exclude the whole folder
 *.py[cod]	# Will match .pyc, .pyo and .pyd files 
 *$py.class
