@@ -2,7 +2,9 @@
 
 Here I'm assuming you have no Python and a Windows 10 machine. 
 
-These are the steps I took mid-project to create a virtual environment for this project. The requirements.txt file can be used to recreate the package dependencies for this environment.
+Mid-project I noticed my environments and package dependencies were such a mess I uninstalled EVERYTHING and started from scratch.
+
+So here are the steps I took mid-project to crea a virtual environment for this project and get all the package dependencies into a requirements.txt file that can be imported for reproducibility.
 
 ---
 
