@@ -33,7 +33,10 @@ def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10, n_jobs=6):
     gridsearches = []
     for ix, X_name in enumerate(Xnames):
 
-        X_ = Xs[ix].toarray()
+        # need to add check for whether X is sparse?
+        # why toarray
+        X_ = Xs[ix]
+        #X_ = Xs[ix].toarray()
         X_name = X_name.split('.')[0]
 
         # split into training and validation sets
@@ -59,7 +62,8 @@ def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10, n_jobs=6):
                                        refit='tpr', 
                                        cv=cv_folds, 
                                        return_train_score=True, 
-                                       n_jobs=n_jobs)
+                                       n_jobs=n_jobs,
+                                       verbose=1)
         
         # train models
         print(f'\nTraining {ix+1}: {X_name}...')
