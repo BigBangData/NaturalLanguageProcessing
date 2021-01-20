@@ -40,8 +40,10 @@ def gridsearch_wrapper(Xs, Xnames, y, param_grid, k=10, n_jobs=6):
         X_name = X_name.split('.')[0]
 
         # split into training and validation sets
-        X_train, X_val, y_train, y_val = train_test_split(X_, y, 
-                                                          stratify=y)
+        X_train, X_val, y_train, y_val = train_test_split(X_, 
+                                                          y, 
+                                                          stratify=y,
+                                                          random_state=42)
 
         # setup scorers
         scorers = {
