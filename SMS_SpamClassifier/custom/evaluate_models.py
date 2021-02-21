@@ -1,12 +1,64 @@
 # #!/usr/bin/env python
 import time
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split, \
     ShuffleSplit, StratifiedKFold, learning_curve
 from sklearn.metrics import make_scorer, accuracy_score, \
     recall_score, confusion_matrix
+
+# Train
+def time_deco(func):
+    def wrapper(clf, X, y):
+        start = time.time()
+        func(clf, X, y)
+        m,s = divmod(time.time() - start, 60)
+        print(f'Elapsed: {m:0.0f}m {s:0.0f}s')
+    return wrapper
+
+@time_deco
+def fit_clf(clf, X, y):
+    clf.fit(X, y)
+    
+# Evaluate
+def eval_clf(y_true, y_pred):
+    tn, fp, fn, tp = confusion_matrix(y_true, 
+                                      y_pred).ravel()
+    confmat_df = pd.DataFrame(
+        np.array(([tn, fp], [fn, tp])),
+        columns=['pred_neg', 'pred_pos'], 
+        index=['cond_neg', 'cond_pos']
+    )
+    # unpack metrics
+    acc = (tp + tn) / (tp + tn + fp + fn)
+    tpr = tp / (tp + fn)
+    tnr = tn / (tn + fp)
+    # print results
+    print(confmat_df)
+    print(f'acc: {acc:0.4f}')
+    print(f'tpr: {tpr:0.4f}')
+    print(f'tnr: {tnr:0.4f}')
+
+def extract_df(gd):
+    gd_res = gd.cv_results_
+    df = pd.concat([
+                    pd.DataFrame(gd_res["params"]),
+                    pd.DataFrame(gd_res["mean_train_acc"], columns=["mean_train_acc"]),
+                    pd.DataFrame(gd_res["mean_train_tpr"], columns=["mean_train_tpr"]),
+                    pd.DataFrame(gd_res["mean_train_tnr"], columns=["mean_train_tnr"]),
+                    pd.DataFrame(gd_res["mean_test_acc"], columns=["mean_val_acc"]),
+                    pd.DataFrame(gd_res["mean_test_tpr"], columns=["mean_val_tpr"]),
+                    pd.DataFrame(gd_res["mean_test_tnr"], columns=["mean_val_tnr"]),
+                    pd.DataFrame(gd_res["mean_fit_time"], columns=["mean_fit_time"])
+                    #pd.DataFrame(gd_res["std_test_acc"], columns=["std_val_acc"]),
+                    #pd.DataFrame(gd_res["std_test_tpr"], columns=["std_val_tpr"]),
+                    #pd.DataFrame(gd_res["std_test_tnr"], columns=["std_val_tnr"]),
+                   ]
+                   , axis=1)
+    return df
+
 
 # Plot Learning Curves
 def train_plot(clf, X, y, cv, verbose, train_sizes, n_jobs, 
