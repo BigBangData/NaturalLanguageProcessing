@@ -13,4 +13,4 @@ The finished project is not a step-by-step tutorial. Rather, I'm hoping for it t
 
 - **Twitter Sentiment Analysis** 
 
-This project builds upon the firstby applying the same framework to a tangential problem, predicting the polarity of a Tweet.
+This project builds upon the first by applying the same framework to a tangential problem, predicting the polarity of a Tweet.
