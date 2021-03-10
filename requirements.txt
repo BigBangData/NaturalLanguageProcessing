@@ -80,7 +80,6 @@ pillow==8.1.0==py39h4fa10fc_0
 pip==20.3.3==py39haa95532_0
 prometheus_client==0.9.0==pyhd3eb1b0_0
 prompt-toolkit==3.0.8==py_0
-prompt_toolkit==3.0.8==0
 pycparser==2.20==py_2
 pygments==2.7.3==pyhd3eb1b0_0
 pyparsing==2.4.7==py_0
