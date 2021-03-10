@@ -31,9 +31,10 @@ def predict_fun():
         X_test_processed = dp.transform_newdata(new_data)
         
         y_pred = XGboost_mod1.predict(X_test_processed)
+		
 
     return render_template('result.html',
-                           prediction = y_pred)   
+                           prediction = y_pred[0])   
 
 if __name__ == '__main__':
     app.run(debug=True)
