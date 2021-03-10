@@ -14,7 +14,7 @@ def home():
     return render_template('home.html')
 
 @app.route('/predict',methods=['POST'])
-def predict_newdata(): 
+def predict_fun(): 
 
     XGboost_mod1_PATH = os.path.join("data", 
                                      "5_deployment", 
