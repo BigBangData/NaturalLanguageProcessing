@@ -26,13 +26,18 @@ def predict_fun():
     if request.method == 'POST': 
 
         message = request.form['message'] 
-        new_data = np.array([message])
-    
-        X_test_processed = dp.transform_newdata(new_data)
         
-        y_pred = XGboost_mod1.predict(X_test_processed)
+		try:
+		    new_data = np.array([message])
+		except:
+		    new_data = [message]
 		
-
+		try:
+			X_test_processed = dp.transform_newdata(new_data)
+            y_pred = XGboost_mod1.predict(X_test_processed)
+		except:
+			y_pred = 0
+		
     return render_template('result.html',
                            prediction = y_pred[0])   
 
