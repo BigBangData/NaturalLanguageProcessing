@@ -7,7 +7,7 @@ async_generator==1.10==py_0
 attrs==20.3.0==pyhd3eb1b0_0
 backcall==0.2.0==py_0
 blas==1.0==mkl
-bleach>==3.3.0==py_0
+bleach>=3.3.0==py_0
 ca-certificates==2021.1.19==haa95532_1
 certifi==2020.12.5==py39haa95532_0
 cffi==1.14.4==py39hcd4344a_0
@@ -23,7 +23,6 @@ freetype==2.10.4==hd328e21_0
 icc_rt==2019.0.0==h0cc432a_1
 icu==58.2==ha925a31_3
 idna==3.1==pypi_0
-importlib-metadata==2.0.0==py_1
 importlib_metadata==2.0.0==1
 intel-openmp==2020.2==254
 ipykernel==5.3.4==py39h7b7c402_0
