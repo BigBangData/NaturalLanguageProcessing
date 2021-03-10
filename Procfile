@@ -1,1 +1,1 @@
-web: gunicorn spam_detect:app
+web: gunicorn spam-detect42:app
