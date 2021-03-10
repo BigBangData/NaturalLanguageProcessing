@@ -151,11 +151,3 @@ if __name__=="__main__":
     # change date manually
     file_path = os.path.join(model_dir, "01062021_rf_gridsearches_3.joblib")
     joblib.dump(results, file_path)
-
-    
-    
-    
-    
-    
-    
-    
