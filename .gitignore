@@ -8,3 +8,5 @@ SMS_SpamClassifier/.ipynb_checkpoints/*
 SMS_SpamClassifier/old/.ipynb_checkpoints/*
 SMS_SpamClassifier/__pycache__/
 SMS_SpamClassifier/custom/__pycache__/
+/custom/__pycache__/
+/old/.ipynb_checkpoints/*
