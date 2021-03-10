@@ -27,10 +27,6 @@ parso==0.7.0
 pyparsing==2.4.7
 python-dateutil==2.8.1
 pyzmq==20.0.0
-QtPy==1.9.0
-sip==4.19.13
-terminado==0.9.2
-testpath==0.4.4
 uritools==3.0.0
 urlextract==1.2.0
 webencodings==0.5.1
