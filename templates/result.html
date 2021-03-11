@@ -2,31 +2,32 @@
 <html>
 <head>
 	<title></title>
-    <<link rel="stylesheet" type="text/css" href="../static/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 </head>
 <body>
-
 	<header>
 		<div class="container">
 		<div id="brandname">
-			ML App
+			Machine Learning App with Flask
 		</div>
-		<h2>Spam Detector For SMS Messages</h2>
-		
+		<h2>Spam Detector For SMS Messages</h2>	
 	</div>
 	</header>
-	<p style="color:blue;font-size:20;text-align: center;"><b>Results for Comment</b></p>
-	<div class="results">
-
-
-		
+	<!--<p style="color:blue;font-size:20;text-align: center;"><b>Results for Comment</b></p>> -->
+	<div class="results">	
 	{% if prediction == 1%}
-	<h2 style="color:red;">Spam</h2>
+	<h2 style="color:red;">SPAM!</h2>
 	{% elif prediction == 0%}
-	<h2 style="color:blue;">Not a Spam (It is a Ham)</h2>
+	<h2 style="color:blue;">That's a legitimate message.</h2>
 	{% endif %}
-
 	</div>
-
 </body>
 </html>
+
+<footer>
+	<div>
+		<ul>
+			<h3><center><a href="/">Go To Home Page</a></center></h3>
+		</ul>
+	</div>
+</footer>
