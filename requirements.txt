@@ -9,7 +9,7 @@ chardet=4.0.0=py38haa95532_1003
 conda=4.9.2=py38haa95532_0
 conda-package-handling=1.7.2=py38h76e460a_0
 console_shortcut=0.1.1=4
-cryptography=3.3.1=py38hcd4344a_0
+cryptography>=3.3.2
 idna=2.10=py_0
 menuinst=1.4.16=py38he774522_1
 openssl=1.1.1i=h2bbff1b_0
