@@ -4,6 +4,7 @@ venv/		# Exclude virtual environment (if any, using conda env)
 *.py[cod]	# Will match .pyc, .pyo and .pyd files 
 *$py.class
 *.ipynb_checkpoints/*
+SMS_SpamDetect/.ipynb_checkpoints/*
 SMS_SpamDetect/custom/.ipynb_checkpoints/*
 SMS_SpamDetect/custom/__pycache__/*
 SMS_SpamDetect/old/.ipynb_checkpoints/*

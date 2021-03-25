@@ -100,15 +100,19 @@ def transform_newdata(new_data):
 
     # counter
     X_test_counter = pipe['counter'].fit_transform(new_data) 
+    
     # BoT
     X_test_bot = X_train_transformer.transform(X_test_counter)
+    
     # Tfidf
     X_test_tfidf = X_train_fit.transform(X_test_bot)
+    
     # SVD
     sigma_inverse = 1 / X_train_svd_transformer.sigma_
     U_transpose = X_train_svd_transformer.U_.T
     UT_TestTfidfT = (U_transpose @ X_test_tfidf.T)
     X_test_svd = (sigma_inverse.reshape(-1,1) * UT_TestTfidfT).T
+    
     # Cosine Similarities
     test_similarities = cosine_similarity(sp.vstack((X_test_svd, X_train_svd_spam)))
     spam_cols = range(X_test_svd.shape[0], test_similarities.shape[0])
@@ -116,6 +120,7 @@ def transform_newdata(new_data):
     for ix in range(X_test_svd.shape[0]):
         mean_spam_sim = np.mean(test_similarities[ix, spam_cols])
         test_mean_spam_sims.append(mean_spam_sim)
+        
     # stack
     X_test_processed = sp.hstack((csr_matrix(test_mean_spam_sims).T, X_test_svd))
     
