@@ -95,7 +95,7 @@ pyrsistent=0.18.0=py38h196d8e1_0
 python=3.8.10=hdbf39b2_7
 python-dateutil=2.8.2=pyhd3eb1b0_0
 pytz=2021.3=pyhd3eb1b0_0
-pywin32=228=py38hbaba5e8_1
+pywin32=302=pypi_0
 pywin32-ctypes=0.2.0=pypi_0
 pywinpty=0.5.7=py38_0
 pyzmq=22.2.1=py38hd77b12b_1
