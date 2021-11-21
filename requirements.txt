@@ -9,7 +9,7 @@ auto-py-to-exe=2.10.0=pypi_0
 backcall=0.2.0=pyhd3eb1b0_0
 blas=1.0=mkl
 bleach=4.0.0=pyhd3eb1b0_0
-bottle=0.12.19=pypi_0
+bottle>=0.12.19=pypi_0
 bottle-websocket=0.2.9=pypi_0
 bottleneck=1.3.2=py38h2a96729_1
 ca-certificates=2021.10.26=haa95532_2
