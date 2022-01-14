@@ -78,7 +78,7 @@ pandocfilters=1.4.3=py38haa95532_1
 parso=0.8.2=pyhd3eb1b0_0
 pefile=2021.9.3=pypi_0
 pickleshare=0.7.5=pyhd3eb1b0_1003
-pillow=8.4.0=py38hd45dc43_0
+pillow>=9.0.0
 pip=21.2.2=py38haa95532_0
 portaudio=19.6.0=he774522_4
 prometheus_client=0.12.0=pyhd3eb1b0_0
